@@ -208,15 +208,15 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
             </View>
             <View>
               <Text style={[styles.cardTitle, { color: theme.colors.onSurface }]}>
-                Milestone Badges Showcase
+                Milestone Achievements 🔒
               </Text>
               <Text style={[styles.cardSubtitle, { color: theme.colors.onSurfaceVariant }]}>
-                Unlock by hitting weekly streaks
+                Unlocked as you maintain streaks
               </Text>
             </View>
           </View>
           <Text style={[styles.cardDesc, { color: theme.colors.onSurfaceVariant }]}>
-            Earn these legendary Telugu meme badges as you crush your milestone goals!
+            Hidden achievements that unlock as you crush your daily roadmap and keep your streak alive.
           </Text>
 
           {MEME_BADGES_CATALOG.map((b) => (

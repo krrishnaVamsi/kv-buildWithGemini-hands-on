@@ -209,7 +209,7 @@ export const HomeScreen: React.FC = () => {
             “Okkasari commit aithe na maata nene vinanu!”
           </Text>
           <Text style={styles.heroSub}>
-            Zero excuses. Pick a subject, build your daily roadmap, and earn legendary Telugu meme badges.
+            Zero excuses. Pick a subject, build your daily roadmap, and lock in.
           </Text>
 
           <View style={styles.heroFooterRow}>
@@ -225,7 +225,7 @@ export const HomeScreen: React.FC = () => {
             </TouchableOpacity>
 
             <View style={styles.memeTag}>
-              <Text style={styles.memeTagText}>#TeluguMemeEnergy 🚀</Text>
+              <Text style={styles.memeTagText}>#PokiriMode ⚡️</Text>
             </View>
           </View>
         </View>

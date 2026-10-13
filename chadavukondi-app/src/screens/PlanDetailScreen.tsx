@@ -182,7 +182,7 @@ export const PlanDetailScreen: React.FC<PlanDetailScreenProps> = ({
                 {plan.badges ? plan.badges.length : 0}
               </Text>
               <Text style={[styles.overviewStatLabel, { color: theme.colors.onSurfaceVariant }]}>
-                Meme Badges 🏆
+                Milestones 🏆
               </Text>
             </View>
           </View>
