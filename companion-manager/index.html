@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chadavukondi Firstu - Content & Meme Manager</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Telugu:wght@500;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <header class="top-nav">
+      <div class="brand">
+        <div class="badge-icon">🎓</div>
+        <div>
+          <h1>చదువుకోండి ఫస్టు</h1>
+          <p class="subtitle">Content, Meme References & Badge Companion Manager</p>
+        </div>
+      </div>
+      <div class="actions">
+        <button id="exportJsonBtn" class="btn btn-secondary">Export JSON</button>
+        <button id="copyTsBtn" class="btn btn-primary">Copy as memeCatalog.ts</button>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <!-- Section: Meme References -->
+      <section class="card-section">
+        <div class="section-head">
+          <div>
+            <h2>Telugu Meme Dialogues & References</h2>
+            <p>Motivational, funny, and discipline meme quotes injected into the app.</p>
+          </div>
+          <button id="addMemeBtn" class="btn btn-small">+ Add Meme</button>
+        </div>
+        <div id="memeList" class="grid-list"></div>
+      </section>
+
+      <!-- Section: Badges & Rewards -->
+      <section class="card-section">
+        <div class="section-head">
+          <div>
+            <h2>Milestone Achievement Badges</h2>
+            <p>Weekly, monthly, and streak badges earned by learners.</p>
+          </div>
+          <button id="addBadgeBtn" class="btn btn-small">+ Add Badge</button>
+        </div>
+        <div id="badgeList" class="grid-list"></div>
+      </section>
+    </main>
+
+    <!-- Modal for editing/adding meme -->
+    <div id="editModal" class="modal-backdrop hidden">
+      <div class="modal">
+        <div class="modal-header">
+          <h3 id="modalTitle">Edit Item</h3>
+          <button id="closeModalBtn" class="close-btn">&times;</button>
+        </div>
+        <div id="modalBody" class="modal-body"></div>
+        <div class="modal-footer">
+          <button id="modalCancelBtn" class="btn btn-secondary">Cancel</button>
+          <button id="modalSaveBtn" class="btn btn-primary">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
