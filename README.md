@@ -23,6 +23,16 @@ Clone this repo, open [Antigravity](https://antigravity.google), and build your 
 
 ---
 
+> ### ⚡️ Featured Project: Chadavukondi Firstu! (చదువుకోండి ఫస్టు)
+> **“Okkasari commit aithe na maata nene vinanu!”** 🔥  
+> *Stop scrolling, lock in.*
+>
+> 🌐 **Live Web Application (iOS / Android / Web)**: [**https://krrishnavamsi.github.io/kv-buildWithGemini-hands-on/**](https://krrishnavamsi.github.io/kv-buildWithGemini-hands-on/)  
+> 📄 **Technical Documentation & Architecture**: [**`DOCUMENTATION.md`**](DOCUMENTATION.md)  
+> 📦 **Application Code**: [**`chadavukondi-app/`**](chadavukondi-app/)
+
+---
+
 ## 📚 Table of Contents
 
 - [🧩 Anatomy of a Track 3 Project](#-anatomy-of-a-track-3-project)

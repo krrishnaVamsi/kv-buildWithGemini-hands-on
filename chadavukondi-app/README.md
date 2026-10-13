@@ -1,54 +1,63 @@
-# Chadavukondi Firstu (చదువుకోండి ఫస్టు)
+# Chadavukondi Firstu! ⚡️ (చదువుకోండి ఫస్టు)
 
-> *"Inka evaru matladakandi, Chadavukondi Firstu!"* 🎓🔥
+> **“Okkasari commit aithe na maata nene vinanu!”** 🔥  
+> *Stop scrolling, lock in.*
 
-A cross-platform study planner application built with React Native & Expo for iOS and Android, inspired by popular Telugu meme culture.
+A cross-platform mobile and web application built with **React Native & Expo**, featuring **Google Material You 3.0**, **OLED Dark Mode**, **Google Gemini AI**, and surprise Telugu pop-culture milestone easter eggs.
 
 ---
 
-## Key Features
+## 🌐 Live Deployment & Links
+
+- 🚀 **Live Web App (iOS, Android, Web)**: [**https://krrishnavamsi.github.io/kv-buildWithGemini-hands-on/**](https://krrishnavamsi.github.io/kv-buildWithGemini-hands-on/)
+- 💻 **Source Code Repository**: [**https://github.com/krrishnaVamsi/kv-buildWithGemini-hands-on**](https://github.com/krrishnaVamsi/kv-buildWithGemini-hands-on)
+- 📄 **Full Technical Documentation**: [`DOCUMENTATION.md`](../DOCUMENTATION.md)
+
+---
+
+## ✨ Key Features
 
 1. **Zero-Backend & Offline-First**:
-   - Zero login / no accounts needed.
-   - All study plans, daily schedules, custom topics, streak records, and milestone badges are stored strictly in local storage (`AsyncStorage`).
-   - Sensitive credentials like the Gemini API Key are stored locally on the device (or configured through `.env`) and never committed to Git.
-2. **Interactive AI Study Planner (Chat UI)**:
-   - Conversational questionnaire asking:
-     - Target Subject / Exam
-     - Weekly Availability (Days/Week)
-     - Daily Focused Hours
-     - Target Timeline (Months)
-   - Accurately generates a structured syllabus schedule via Google Gemini API (with smart fallback synthesizer).
-3. **Business Calendar & Schedule Management**:
-   - Week ribbon and day-by-day business calendar breakdown.
-   - Per-topic actions: **Complete** (✅), **Review Later** (🔖).
-   - **Add Custom Topic** button to dynamically insert subtopics or revision tasks into any day.
-   - Native back gestures and header back button navigation to smoothly return to the plan dashboard.
-4. **Export to Excel (.xlsx)**:
-   - One-tap button that packages the full syllabus, week themes, daily dates, allocated hours, completion statuses, and progress metrics into an Excel `.xlsx` file.
-   - Triggerable via native sharing on iOS/Android and direct file download on Web.
-5. **Streaks & Telugu Meme Badges**:
-   - Weekly & monthly milestone tracking.
-   - Badges inspired by Telugu meme culture (*Beginner Topper*, *Brahmi Focus Mode*, *Relangi Mavayya Smile*, *Month 1 Boss Level*).
-6. **Companion Content & Meme Manager**:
-   - Located in [`companion-manager/`](file:///config/Desktop/BuildWithGemini/companion-manager).
-   - Lightweight web app to manage, preview, export JSON, and sync meme references and milestone badges.
+   - Zero login / accounts required.
+   - All game plans, schedules, custom topics, streak records, and unlocked badges persist locally in `AsyncStorage`.
+   - Complete privacy: **Zero `.env` or API keys are ever committed to git.**
+
+2. **OLED Dark Mode & Material You 3.0**:
+   - One-tap Moon/Sun toggle in the header with persistent theme storage.
+   - Deep Obsidian (`#0B0F19`) OLED palette with Electric Glow Violet (`#818CF8`) accents.
+   - Distinctive Gen Z typography: **Space Grotesk** + **Plus Jakarta Sans**.
+
+3. **Interactive AI Game Plan Architect (Chat UI)**:
+   - Conversational assistant powered by Google Gemini that turns your goals into tailored daily quests.
+   - Asks target subject, days per week, daily hours, and target timeline in months.
+   - Built-in smart offline syllabus synthesizer as a graceful fallback.
+
+4. **Multi-Week Roadmap & Daily Quests**:
+   - Week carousel and daily quest tabs.
+   - Topic check-offs: **Crushed It! ⚡️** and **Saved for Review 🔖**.
+   - Dynamic **Add Quest** dialog to insert custom topics or revision items.
+
+5. **Surprise Milestone Achievements 🔒**:
+   - Milestone badges are kept as hidden surprise easter eggs that reveal themselves only when you keep your streaks alive!
+
+6. **Export to Excel (.xlsx)**:
+   - One-tap download of your full roadmap into an organized `.xlsx` file.
 
 ---
 
-## Running the App
+## 📱 Mobile Installation (PWA)
 
-### 1. Mobile App (Expo)
-```bash
-cd chadavukondi-app
-npm start       # Launches Expo Dev Tools (QR code for Expo Go on iOS/Android)
-npm run web     # Launches instant Web preview
-npm run android # Run on Android emulator
-npm run ios     # Run on iOS simulator (macOS)
-```
+- **iPhone/iPad**: Open the live link in Safari ➔ Tap **Share** ➔ **Add to Home Screen**.
+- **Android**: Open the live link in Chrome ➔ Tap **Menu (⋮)** ➔ **Add to Home Screen**.
 
-### 2. Companion Content Manager
-Open [`companion-manager/index.html`](file:///config/Desktop/BuildWithGemini/companion-manager/index.html) directly in any web browser or serve with:
+---
+
+## 💻 Running Locally
+
 ```bash
-npx serve companion-manager
+# 1. Install dependencies
+npm install
+
+# 2. Start Expo dev server
+npx expo start --web
 ```
