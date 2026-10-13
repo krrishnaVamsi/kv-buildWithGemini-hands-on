@@ -115,9 +115,12 @@ document.getElementById('testApiKeyBtn').addEventListener('click', async () => {
   testResultBox.textContent = 'Testing connection with Google Gemini 2.5 Flash...';
 
   try {
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`, {
+    const res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-goog-api-key': key,
+      },
       body: JSON.stringify({
         contents: [{ parts: [{ text: 'Respond with: "Gemini connection verified!"' }] }]
       })
@@ -137,6 +140,16 @@ document.getElementById('testApiKeyBtn').addEventListener('click', async () => {
   }
 });
 
+function escapeHtml(str) {
+  if (typeof str !== 'string') return '';
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 function renderMemes() {
   const list = document.getElementById('memeList');
   list.innerHTML = '';
@@ -146,22 +159,31 @@ function renderMemes() {
     card.innerHTML = `
       <div>
         <div class="item-card-header">
-          <span class="item-title">${m.title}</span>
-          <span class="item-category">${m.category}</span>
+          <span class="item-title">${escapeHtml(m.title)}</span>
+          <span class="item-category">${escapeHtml(m.category)}</span>
         </div>
-        <p class="item-quote">“${m.teluguQuote}”</p>
-        <p class="item-desc">${m.englishMeaning}</p>
-        <p class="item-desc" style="font-size: 11px; color: #6B7280; margin-top: 4px;">🎬 ${m.characterOrScene}</p>
+        <p class="item-quote">“${escapeHtml(m.teluguQuote)}”</p>
+        <p class="item-desc">${escapeHtml(m.englishMeaning)}</p>
+        <p class="item-desc" style="font-size: 11px; color: #6B7280; margin-top: 4px;">🎬 ${escapeHtml(m.characterOrScene)}</p>
       </div>
       <div class="item-footer">
         <span style="font-size: 12px; color: #9CA3AF;">#${idx + 1}</span>
         <div class="card-actions">
-          <button class="btn btn-secondary btn-small" onclick="editMeme('${m.id}')">Edit</button>
-          <button class="btn btn-danger btn-small" onclick="deleteMeme('${m.id}')">Delete</button>
+          <button class="btn btn-danger btn-small btn-delete-meme" data-id="${escapeHtml(m.id)}">Delete</button>
         </div>
       </div>
     `;
     list.appendChild(card);
+  });
+
+  list.querySelectorAll('.btn-delete-meme').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      const id = e.currentTarget.getAttribute('data-id');
+      if (confirm('Delete this meme reference?')) {
+        memes = memes.filter((m) => m.id !== id);
+        renderMemes();
+      }
+    });
   });
 }
 
@@ -174,40 +196,35 @@ function renderBadges() {
     card.innerHTML = `
       <div>
         <div class="item-card-header">
-          <span class="item-title">${b.title}</span>
-          <span class="item-badge-pill" style="background-color: ${b.color}22; color: ${b.color}; border: 1px solid ${b.color}55;">
-            ${b.badgeType}
+          <span class="item-title">${escapeHtml(b.title)}</span>
+          <span class="item-badge-pill" style="background-color: ${escapeHtml(b.color)}22; color: ${escapeHtml(b.color)}; border: 1px solid ${escapeHtml(b.color)}55;">
+            ${escapeHtml(b.badgeType)}
           </span>
         </div>
-        <p class="item-quote" style="color: ${b.color};">${b.teluguTitle}</p>
-        <p class="item-desc">${b.description}</p>
-        <p class="item-desc" style="font-size: 12px; font-style: italic; margin-top: 4px;">"${b.memeQuote}"</p>
+        <p class="item-quote" style="color: ${escapeHtml(b.color)};">${escapeHtml(b.teluguTitle)}</p>
+        <p class="item-desc">${escapeHtml(b.description)}</p>
+        <p class="item-desc" style="font-size: 12px; font-style: italic; margin-top: 4px;">"${escapeHtml(b.memeQuote)}"</p>
       </div>
       <div class="item-footer">
-        <span style="font-size: 12px; color: #9CA3AF;">Icon: ${b.iconName}</span>
+        <span style="font-size: 12px; color: #9CA3AF;">Icon: ${escapeHtml(b.iconName)}</span>
         <div class="card-actions">
-          <button class="btn btn-secondary btn-small" onclick="editBadge('${b.id}')">Edit</button>
-          <button class="btn btn-danger btn-small" onclick="deleteBadge('${b.id}')">Delete</button>
+          <button class="btn btn-danger btn-small btn-delete-badge" data-id="${escapeHtml(b.id)}">Delete</button>
         </div>
       </div>
     `;
     list.appendChild(card);
   });
+
+  list.querySelectorAll('.btn-delete-badge').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      const id = e.currentTarget.getAttribute('data-id');
+      if (confirm('Delete this achievement badge?')) {
+        badges = badges.filter((b) => b.id !== id);
+        renderBadges();
+      }
+    });
+  });
 }
-
-window.deleteMeme = function(id) {
-  if (confirm('Delete this meme reference?')) {
-    memes = memes.filter(m => m.id !== id);
-    renderMemes();
-  }
-};
-
-window.deleteBadge = function(id) {
-  if (confirm('Delete this achievement badge?')) {
-    badges = badges.filter(b => b.id !== id);
-    renderBadges();
-  }
-};
 
 document.getElementById('addMemeBtn').addEventListener('click', () => {
   const title = prompt('Enter Meme Reference Title:');

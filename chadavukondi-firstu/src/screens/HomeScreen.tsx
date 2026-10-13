@@ -14,7 +14,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { StudyPlan } from '../types';
 import { PlanCard } from '../components/PlanCard';
-import { loadPlans, deletePlan, getApiKey } from '../storage/planStorage';
+import { loadPlans, deletePlan } from '../storage/planStorage';
 import { ChatPlannerScreen } from './ChatPlannerScreen';
 import { PlanDetailScreen } from './PlanDetailScreen';
 import { useTheme } from '../theme/ThemeContext';
@@ -27,7 +27,6 @@ export const HomeScreen: React.FC = () => {
   const [activeScreen, setActiveScreen] = useState<'home' | 'chat' | 'detail'>('home');
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
   const [chatSessionKey, setChatSessionKey] = useState<number>(Date.now());
-  const [currentApiKey, setCurrentApiKey] = useState('');
 
   const selectedPlan = plans.find((p) => p.id === selectedPlanId) || null;
 
@@ -39,8 +38,6 @@ export const HomeScreen: React.FC = () => {
   const refreshData = async () => {
     const loaded = await loadPlans();
     setPlans(loaded);
-    const key = await getApiKey();
-    setCurrentApiKey(key);
     setLoading(false);
     setRefreshing(false);
   };
