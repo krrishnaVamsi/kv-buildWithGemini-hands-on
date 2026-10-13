@@ -23,6 +23,9 @@
     },
     "plugins": [
       "expo-sharing"
-    ]
+    ],
+    "experiments": {
+      "baseUrl": "/kv-buildWithGemini-hands-on"
+    }
   }
 }

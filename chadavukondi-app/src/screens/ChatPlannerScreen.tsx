@@ -117,7 +117,7 @@ export const ChatPlannerScreen: React.FC<ChatPlannerScreenProps> = ({
       const generatingMsg: Message = {
         id: `msg-${Date.now() + 1}`,
         sender: 'ai',
-        text: `“Inka matladakandi, Chadavukondi Firstu!” 🚀🔥\n\nCooking your personalized day-by-day roadmap for “${subject}” (${validMonths} months, ${daysPerWeek} days/wk, ${hoursPerDay} hrs/day)...`,
+        text: `“Okkasari commit aithe na maata nene vinanu!” 🚀🔥\n\nCooking your personalized day-by-day roadmap for “${subject}” (${validMonths} months, ${daysPerWeek} days/wk, ${hoursPerDay} hrs/day)...`,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };
       setMessages([...nextMessages, generatingMsg]);

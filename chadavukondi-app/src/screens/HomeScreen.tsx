@@ -206,7 +206,7 @@ export const HomeScreen: React.FC = () => {
             <Text style={styles.heroHeaderPillText}>LOCKED IN MODE 🔥</Text>
           </View>
           <Text style={styles.heroTitle}>
-            “Inka matladakandi... Chadavukondi Firstu!”
+            “Okkasari commit aithe na maata nene vinanu!”
           </Text>
           <Text style={styles.heroSub}>
             Zero excuses. Pick a subject, build your daily roadmap, and earn legendary Telugu meme badges.
