@@ -268,6 +268,34 @@ export const ChatPlannerScreen: React.FC<ChatPlannerScreenProps> = ({
         </ScrollView>
 
         {/* Quick Suggestion Pills */}
+        {currentStep === 'ask_subject' && (
+          <View style={styles.chipsRow}>
+            {['Full Stack Web Dev', 'Python & AI', 'DSA & LeetCode', 'UPSC Civils', 'NEET Biology'].map((subj) => (
+              <TouchableOpacity
+                key={subj}
+                style={[
+                  styles.suggestionChip,
+                  {
+                    backgroundColor: theme.colors.cardBg,
+                    borderColor: theme.colors.cardBorder,
+                  },
+                ]}
+                onPress={() => handleSend(subj)}
+                activeOpacity={0.8}
+              >
+                <Text
+                  style={[
+                    styles.suggestionChipText,
+                    { color: theme.colors.primary },
+                  ]}
+                >
+                  🚀 {subj}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
+
         {currentStep === 'ask_days' && (
           <View style={styles.chipsRow}>
             {['3 Days/wk', '4 Days/wk', '5 Days/wk', '6 Days/wk', '7 Days/wk'].map((d) => (

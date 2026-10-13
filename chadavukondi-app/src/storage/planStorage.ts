@@ -161,6 +161,12 @@ export function evaluatePlanStreaksAndBadges(plan: StudyPlan): void {
 
 export async function getApiKey(): Promise<string> {
   try {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const creatorKey = window.localStorage.getItem('creator_gemini_api_key');
+      if (creatorKey && creatorKey.trim()) {
+        return creatorKey.trim();
+      }
+    }
     const key = await AsyncStorage.getItem(STORAGE_KEY_API_KEY);
     return key || '';
   } catch {

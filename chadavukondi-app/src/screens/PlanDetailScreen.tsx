@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -36,6 +36,11 @@ export const PlanDetailScreen: React.FC<PlanDetailScreenProps> = ({
   const [newTopicTitle, setNewTopicTitle] = useState('');
   const [newTopicSummary, setNewTopicSummary] = useState('');
   const [newTopicHours, setNewTopicHours] = useState('1');
+
+  useEffect(() => {
+    setSelectedWeekIndex(0);
+    setSelectedDayIndex(0);
+  }, [plan.id]);
 
   const currentWeek: StudyWeek | undefined = plan.weeks[selectedWeekIndex] || plan.weeks[0];
   const currentDay: StudyDay | undefined = currentWeek?.days[selectedDayIndex] || currentWeek?.days[0];

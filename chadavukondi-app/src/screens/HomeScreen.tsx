@@ -25,8 +25,16 @@ export const HomeScreen: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [activeScreen, setActiveScreen] = useState<'home' | 'chat' | 'detail'>('home');
-  const [selectedPlan, setSelectedPlan] = useState<StudyPlan | null>(null);
+  const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
+  const [chatSessionKey, setChatSessionKey] = useState<number>(Date.now());
   const [currentApiKey, setCurrentApiKey] = useState('');
+
+  const selectedPlan = plans.find((p) => p.id === selectedPlanId) || null;
+
+  const openChatPlanner = () => {
+    setChatSessionKey(Date.now());
+    setActiveScreen('chat');
+  };
 
   const refreshData = async () => {
     const loaded = await loadPlans();
@@ -44,6 +52,9 @@ export const HomeScreen: React.FC = () => {
   const handleDeletePlan = (plan: StudyPlan) => {
     const doDelete = async () => {
       await deletePlan(plan.id);
+      if (selectedPlanId === plan.id) {
+        setSelectedPlanId(null);
+      }
       await refreshData();
     };
 
@@ -67,11 +78,12 @@ export const HomeScreen: React.FC = () => {
     return (
       <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.colors.surface }]}>
         <ChatPlannerScreen
+          key={`chat-${chatSessionKey}`}
           onBack={() => setActiveScreen('home')}
-          onPlanCreated={(newPlan) => {
-            setSelectedPlan(newPlan);
+          onPlanCreated={async (newPlan) => {
+            await refreshData();
+            setSelectedPlanId(newPlan.id);
             setActiveScreen('detail');
-            refreshData();
           }}
         />
       </SafeAreaView>
@@ -82,14 +94,14 @@ export const HomeScreen: React.FC = () => {
     return (
       <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.colors.surface }]}>
         <PlanDetailScreen
+          key={selectedPlan.id}
           plan={selectedPlan}
           onBack={() => {
             setActiveScreen('home');
             refreshData();
           }}
-          onPlanUpdated={(updated) => {
-            setSelectedPlan(updated);
-            refreshData();
+          onPlanUpdated={async () => {
+            await refreshData();
           }}
         />
       </SafeAreaView>
@@ -188,7 +200,7 @@ export const HomeScreen: React.FC = () => {
           <View style={styles.heroFooterRow}>
             <TouchableOpacity
               style={[styles.heroActionButton, { backgroundColor: theme.colors.primary }]}
-              onPress={() => setActiveScreen('chat')}
+              onPress={openChatPlanner}
               activeOpacity={0.85}
             >
               <Text style={[styles.heroActionText, { color: theme.colors.onPrimary }]}>
@@ -216,7 +228,7 @@ export const HomeScreen: React.FC = () => {
                 styles.newPlanChip,
                 { backgroundColor: theme.colors.primaryContainer },
               ]}
-              onPress={() => setActiveScreen('chat')}
+              onPress={openChatPlanner}
               activeOpacity={0.8}
             >
               <Ionicons name="add" size={18} color={theme.colors.primary} />
@@ -262,7 +274,7 @@ export const HomeScreen: React.FC = () => {
                 styles.emptyActionButton,
                 { backgroundColor: theme.colors.primary },
               ]}
-              onPress={() => setActiveScreen('chat')}
+              onPress={openChatPlanner}
               activeOpacity={0.85}
             >
               <Ionicons name="chatbubbles" size={18} color={theme.colors.onPrimary} />
@@ -279,7 +291,7 @@ export const HomeScreen: React.FC = () => {
               key={p.id}
               plan={p}
               onPress={() => {
-                setSelectedPlan(p);
+                setSelectedPlanId(p.id);
                 setActiveScreen('detail');
               }}
               onDelete={() => handleDeletePlan(p)}
@@ -292,7 +304,7 @@ export const HomeScreen: React.FC = () => {
       <TouchableOpacity
         style={[styles.m3Fab, { backgroundColor: theme.colors.primary }]}
         activeOpacity={0.85}
-        onPress={() => setActiveScreen('chat')}
+        onPress={openChatPlanner}
       >
         <Ionicons name="add" size={28} color={theme.colors.onPrimary} />
       </TouchableOpacity>
