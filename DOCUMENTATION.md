@@ -9,9 +9,10 @@
 
 | Resource | URL |
 | :--- | :--- |
-| 🌐 **Live Deployed Application (iOS / Android / Web)** | [https://krrishnavamsi.github.io/kv-buildWithGemini-hands-on/](https://krrishnavamsi.github.io/kv-buildWithGemini-hands-on/) |
-| 💻 **Deployed Source Code Repository** | [https://github.com/krrishnaVamsi/kv-buildWithGemini-hands-on](https://github.com/krrishnaVamsi/kv-buildWithGemini-hands-on) |
-| 🚀 **GitHub Pages Deployment Branch** | [https://github.com/krrishnaVamsi/kv-buildWithGemini-hands-on/tree/gh-pages](https://github.com/krrishnaVamsi/kv-buildWithGemini-hands-on/tree/gh-pages) |
+| 🌐 **Student App (iOS / Android / Web)** | [https://krrishnavamsi.github.io/kv-buildWithGemini-hands-on/](https://krrishnavamsi.github.io/kv-buildWithGemini-hands-on/) |
+| 🛠️ **Creator Studio & Meme Vault (Private Admin App)** | [https://krrishnavamsi.github.io/kv-buildWithGemini-hands-on/creator/](https://krrishnavamsi.github.io/kv-buildWithGemini-hands-on/creator/) |
+| 💻 **Source Code Repository** | [https://github.com/krrishnaVamsi/kv-buildWithGemini-hands-on](https://github.com/krrishnaVamsi/kv-buildWithGemini-hands-on) |
+| 🚀 **GitHub Pages Branch** | [https://github.com/krrishnaVamsi/kv-buildWithGemini-hands-on/tree/gh-pages](https://github.com/krrishnaVamsi/kv-buildWithGemini-hands-on/tree/gh-pages) |
 
 ---
 
