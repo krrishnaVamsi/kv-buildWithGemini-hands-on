@@ -39,29 +39,26 @@ export const TopicItem: React.FC<TopicItemProps> = ({ topic, onStatusChange }) =
 
         <View style={styles.metaRow}>
           <View style={styles.hourChip}>
-            <Ionicons name="time-outline" size={13} color={M3.colors.secondary} />
+            <Ionicons name="time-outline" size={13} color="#64748B" />
             <Text style={styles.hourText}>{topic.allocatedHours} hrs</Text>
           </View>
 
           {isCompleted && (
             <View style={styles.statusBadgeCompleted}>
-              <Ionicons name="checkmark-circle" size={12} color={M3.colors.success} />
-              <Text style={styles.statusBadgeTextCompleted}>Completed</Text>
+              <Text style={styles.statusBadgeTextCompleted}>Crushed It! ⚡️</Text>
             </View>
           )}
 
           {isReviewLater && (
             <View style={styles.statusBadgeReview}>
-              <Ionicons name="bookmark" size={12} color={M3.colors.warning} />
-              <Text style={styles.statusBadgeTextReview}>Review Later</Text>
+              <Text style={styles.statusBadgeTextReview}>Saved for Review 🔖</Text>
             </View>
           )}
         </View>
       </View>
 
-      {/* M3 Action Buttons */}
+      {/* Action Chips */}
       <View style={styles.actionsCol}>
-        {/* Complete Toggle Button */}
         <TouchableOpacity
           style={[
             styles.actionChip,
@@ -72,20 +69,19 @@ export const TopicItem: React.FC<TopicItemProps> = ({ topic, onStatusChange }) =
         >
           <Ionicons
             name={isCompleted ? 'checkmark-circle' : 'checkmark-circle-outline'}
-            size={18}
-            color={isCompleted ? M3.colors.success : M3.colors.onSurfaceVariant}
+            size={16}
+            color={isCompleted ? '#065F46' : '#64748B'}
           />
           <Text
             style={[
               styles.actionChipText,
-              isCompleted && { color: M3.colors.success, fontWeight: '700' },
+              isCompleted && { color: '#065F46', fontWeight: '800' },
             ]}
           >
             {isCompleted ? 'Done' : 'Done'}
           </Text>
         </TouchableOpacity>
 
-        {/* Review Later Toggle Button */}
         <TouchableOpacity
           style={[
             styles.actionChip,
@@ -96,16 +92,16 @@ export const TopicItem: React.FC<TopicItemProps> = ({ topic, onStatusChange }) =
         >
           <Ionicons
             name={isReviewLater ? 'bookmark' : 'bookmark-outline'}
-            size={18}
-            color={isReviewLater ? M3.colors.warning : M3.colors.onSurfaceVariant}
+            size={16}
+            color={isReviewLater ? '#92400E' : '#64748B'}
           />
           <Text
             style={[
               styles.actionChipText,
-              isReviewLater && { color: M3.colors.warning, fontWeight: '700' },
+              isReviewLater && { color: '#92400E', fontWeight: '800' },
             ]}
           >
-            {isReviewLater ? 'Saved' : 'Review'}
+            {isReviewLater ? 'Saved' : 'Later'}
           </Text>
         </TouchableOpacity>
       </View>
@@ -116,22 +112,22 @@ export const TopicItem: React.FC<TopicItemProps> = ({ topic, onStatusChange }) =
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    backgroundColor: M3.colors.surfaceContainerLowest,
-    borderRadius: M3.shapes.large,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 18,
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: M3.colors.outlineVariant,
+    borderColor: '#E2E8F0',
     ...M3.elevation.level1,
     alignItems: 'center',
   },
   completedContainer: {
-    backgroundColor: '#F3FBF5',
-    borderColor: '#BEE7C7',
+    backgroundColor: '#F0FDF4',
+    borderColor: '#BBF7D0',
   },
   reviewContainer: {
-    backgroundColor: '#FFFBF3',
-    borderColor: '#FBE0B5',
+    backgroundColor: '#FFFBEB',
+    borderColor: '#FDE68A',
   },
   contentCol: {
     flex: 1,
@@ -142,19 +138,19 @@ const styles = StyleSheet.create({
   },
   title: {
     ...M3.typography.titleMedium,
-    color: M3.colors.onSurface,
+    color: '#0F172A',
   },
   completedTitle: {
-    color: '#3B7A4C',
+    color: '#15803D',
     textDecorationLine: 'line-through',
   },
   summary: {
     ...M3.typography.bodySmall,
-    color: M3.colors.onSurfaceVariant,
+    color: '#64748B',
     marginBottom: 8,
   },
   completedSummary: {
-    color: '#6E987B',
+    color: '#86EFAC',
   },
   metaRow: {
     flexDirection: 'row',
@@ -165,7 +161,7 @@ const styles = StyleSheet.create({
   hourChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: M3.colors.surfaceContainerHighest,
+    backgroundColor: '#F1F5F9',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: M3.shapes.full,
@@ -173,35 +169,29 @@ const styles = StyleSheet.create({
   },
   hourText: {
     ...M3.typography.labelSmall,
-    color: M3.colors.onSurfaceVariant,
+    color: '#64748B',
   },
   statusBadgeCompleted: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: M3.colors.successContainer,
+    backgroundColor: '#DCFCE7',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: M3.shapes.full,
-    gap: 4,
   },
   statusBadgeTextCompleted: {
     ...M3.typography.labelSmall,
-    color: M3.colors.onSuccessContainer,
-    fontWeight: '700',
+    color: '#15803D',
+    fontWeight: '800',
   },
   statusBadgeReview: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: M3.colors.warningContainer,
+    backgroundColor: '#FEF3C7',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: M3.shapes.full,
-    gap: 4,
   },
   statusBadgeTextReview: {
     ...M3.typography.labelSmall,
-    color: M3.colors.onWarningContainer,
-    fontWeight: '700',
+    color: '#B45309',
+    fontWeight: '800',
   },
   actionsCol: {
     flexDirection: 'column',
@@ -211,24 +201,30 @@ const styles = StyleSheet.create({
   actionChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 10,
+    paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: M3.shapes.full,
     gap: 4,
-    minWidth: 80,
+    minWidth: 76,
     justifyContent: 'center',
   },
   actionChipNeutral: {
-    backgroundColor: M3.colors.surfaceContainerHigh,
+    backgroundColor: '#F8FAFC',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
   },
   actionChipCompletedActive: {
-    backgroundColor: M3.colors.successContainer,
+    backgroundColor: '#DCFCE7',
+    borderWidth: 1,
+    borderColor: '#86EFAC',
   },
   actionChipReviewActive: {
-    backgroundColor: M3.colors.warningContainer,
+    backgroundColor: '#FEF3C7',
+    borderWidth: 1,
+    borderColor: '#FCD34D',
   },
   actionChipText: {
     ...M3.typography.labelSmall,
-    color: M3.colors.onSurfaceVariant,
+    color: '#475569',
   },
 });

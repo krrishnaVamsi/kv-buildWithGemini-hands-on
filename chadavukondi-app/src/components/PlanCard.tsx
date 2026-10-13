@@ -32,12 +32,14 @@ export const PlanCard: React.FC<PlanCardProps> = ({ plan, onPress, onDelete }) =
   const progressPercent = totalTopics > 0 ? Math.round((completedTopics / totalTopics) * 100) : 0;
 
   return (
-    <TouchableOpacity activeOpacity={0.88} style={styles.card} onPress={onPress}>
+    <TouchableOpacity activeOpacity={0.9} style={styles.card} onPress={onPress}>
       {/* Top Meta & Actions */}
       <View style={styles.headerRow}>
-        <View style={styles.m3Chip}>
-          <Ionicons name="calendar-outline" size={13} color={M3.colors.primary} />
-          <Text style={styles.m3ChipText}>{plan.targetMonths} Mo • {plan.daysPerWeek}d/wk</Text>
+        <View style={styles.durationPill}>
+          <Ionicons name="flash-outline" size={13} color={M3.colors.primary} />
+          <Text style={styles.durationPillText}>
+            {plan.targetMonths} Mo • {plan.daysPerWeek}d/wk • {plan.hoursPerDay}h/day
+          </Text>
         </View>
 
         <TouchableOpacity
@@ -48,7 +50,7 @@ export const PlanCard: React.FC<PlanCardProps> = ({ plan, onPress, onDelete }) =
             onDelete();
           }}
         >
-          <Ionicons name="trash-outline" size={17} color={M3.colors.onSurfaceVariant} />
+          <Ionicons name="trash-outline" size={16} color="#94A3B8" />
         </TouchableOpacity>
       </View>
 
@@ -57,41 +59,33 @@ export const PlanCard: React.FC<PlanCardProps> = ({ plan, onPress, onDelete }) =
         {plan.title}
       </Text>
 
-      {/* Streak and Pace M3 Pills */}
+      {/* Stats Ribbon */}
       <View style={styles.statsRow}>
         <View style={styles.streakPill}>
-          <Ionicons name="flame" size={15} color={M3.colors.warning} />
+          <Text style={styles.streakEmoji}>🔥</Text>
           <Text style={styles.streakText}>{plan.streakWeeks}w Streak</Text>
         </View>
 
-        <View style={styles.statPill}>
-          <Ionicons name="checkmark-done" size={15} color={M3.colors.success} />
-          <Text style={styles.statText}>{completedTopics}/{totalTopics} Topics</Text>
+        <View style={styles.topicsPill}>
+          <Ionicons name="checkbox-outline" size={13} color={M3.colors.secondary} />
+          <Text style={styles.topicsText}>{completedTopics}/{totalTopics} Cleared</Text>
         </View>
 
-        <View style={styles.statPill}>
-          <Ionicons name="time-outline" size={14} color={M3.colors.secondary} />
-          <Text style={styles.statText}>{plan.hoursPerDay}h/day</Text>
+        <View style={styles.xpPill}>
+          <Text style={styles.xpText}>{progressPercent}% Mastery</Text>
         </View>
       </View>
 
-      {/* M3 Capsule Progress Bar */}
-      <View style={styles.progressSection}>
-        <View style={styles.progressInfoRow}>
-          <Text style={styles.progressLabel}>Syllabus Mastery</Text>
-          <Text style={styles.progressValue}>{progressPercent}%</Text>
-        </View>
-        <View style={styles.progressBarTrack}>
-          <View style={[styles.progressBarFill, { width: `${progressPercent}%` }]} />
-        </View>
+      {/* Capsule Progress Bar */}
+      <View style={styles.progressBarTrack}>
+        <View style={[styles.progressBarFill, { width: `${progressPercent}%` }]} />
       </View>
 
-      {/* Upcoming Topic Banner */}
+      {/* Next Up Focus Box */}
       {upcomingTopic && (
         <View style={styles.upcomingBox}>
           <View style={styles.upcomingTag}>
-            <Ionicons name="compass-outline" size={13} color={M3.colors.primary} />
-            <Text style={styles.upcomingTagText}>NEXT UP</Text>
+            <Text style={styles.upcomingTagText}>NEXT UP 🎯</Text>
           </View>
           <Text style={styles.upcomingTitle} numberOfLines={1}>
             {upcomingTopic}
@@ -103,7 +97,7 @@ export const PlanCard: React.FC<PlanCardProps> = ({ plan, onPress, onDelete }) =
       {plan.badges && plan.badges.length > 0 && (
         <View style={styles.badgeRow}>
           {plan.badges.slice(0, 3).map((b) => (
-            <View key={b.id} style={[styles.miniBadge, { backgroundColor: b.color + '22' }]}>
+            <View key={b.id} style={[styles.miniBadge, { backgroundColor: b.color + '1A' }]}>
               <Ionicons name={b.iconName as any} size={12} color={b.color} />
               <Text style={[styles.miniBadgeText, { color: b.color }]}>
                 {b.teluguTitle || b.title}
@@ -123,12 +117,12 @@ export const PlanCard: React.FC<PlanCardProps> = ({ plan, onPress, onDelete }) =
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: M3.colors.surfaceContainerLow,
-    borderRadius: M3.shapes.extraLarge,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 22,
     padding: 20,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: M3.colors.outlineVariant,
+    borderColor: '#E2E8F0',
     ...M3.elevation.level1,
   },
   headerRow: {
@@ -137,30 +131,32 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 10,
   },
-  m3Chip: {
+  durationPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: M3.colors.secondaryContainer,
-    paddingHorizontal: 12,
+    backgroundColor: M3.colors.primaryContainer,
+    paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: M3.shapes.full,
-    gap: 6,
+    gap: 5,
   },
-  m3ChipText: {
+  durationPillText: {
     ...M3.typography.labelSmall,
-    color: M3.colors.onSecondaryContainer,
+    color: M3.colors.onPrimaryContainer,
+    fontWeight: '700',
   },
   deleteIconButton: {
     width: 32,
     height: 32,
     borderRadius: M3.shapes.full,
-    backgroundColor: M3.colors.surfaceContainerHighest,
+    backgroundColor: '#F8FAFC',
     justifyContent: 'center',
     alignItems: 'center',
   },
   title: {
     ...M3.typography.titleLarge,
     color: M3.colors.onSurface,
+    fontWeight: '700',
     marginBottom: 12,
   },
   statsRow: {
@@ -172,51 +168,51 @@ const styles = StyleSheet.create({
   streakPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: M3.colors.warningContainer,
+    backgroundColor: '#FEF3C7',
     paddingHorizontal: 10,
-    paddingVertical: 5,
+    paddingVertical: 4,
     borderRadius: M3.shapes.full,
-    gap: 5,
+    gap: 4,
+  },
+  streakEmoji: {
+    fontSize: 12,
   },
   streakText: {
     ...M3.typography.labelSmall,
-    color: M3.colors.onWarningContainer,
+    color: '#92400E',
+    fontWeight: '700',
   },
-  statPill: {
+  topicsPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: M3.colors.surfaceContainerHighest,
+    backgroundColor: '#E0F2FE',
     paddingHorizontal: 10,
-    paddingVertical: 5,
+    paddingVertical: 4,
     borderRadius: M3.shapes.full,
-    gap: 5,
+    gap: 4,
   },
-  statText: {
+  topicsText: {
     ...M3.typography.labelSmall,
-    color: M3.colors.onSurfaceVariant,
+    color: '#0369A1',
+    fontWeight: '700',
   },
-  progressSection: {
-    marginBottom: 12,
+  xpPill: {
+    backgroundColor: '#F1F5F9',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: M3.shapes.full,
   },
-  progressInfoRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 6,
-  },
-  progressLabel: {
+  xpText: {
     ...M3.typography.labelSmall,
-    color: M3.colors.onSurfaceVariant,
-  },
-  progressValue: {
-    ...M3.typography.labelSmall,
-    color: M3.colors.primary,
+    color: '#475569',
     fontWeight: '700',
   },
   progressBarTrack: {
-    height: 8,
-    backgroundColor: M3.colors.surfaceContainerHighest,
+    height: 7,
+    backgroundColor: '#F1F5F9',
     borderRadius: M3.shapes.full,
     overflow: 'hidden',
+    marginBottom: 12,
   },
   progressBarFill: {
     height: '100%',
@@ -224,22 +220,21 @@ const styles = StyleSheet.create({
     borderRadius: M3.shapes.full,
   },
   upcomingBox: {
-    backgroundColor: M3.colors.surfaceContainerHigh,
-    borderRadius: M3.shapes.large,
+    backgroundColor: '#F8FAFC',
+    borderRadius: 14,
     padding: 12,
     marginBottom: 10,
+    borderLeftWidth: 3,
+    borderLeftColor: M3.colors.primary,
   },
   upcomingTag: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    marginBottom: 4,
+    marginBottom: 3,
   },
   upcomingTagText: {
     fontSize: 10,
     fontWeight: '800',
     color: M3.colors.primary,
-    letterSpacing: 0.8,
+    letterSpacing: 0.6,
   },
   upcomingTitle: {
     ...M3.typography.bodyMedium,
@@ -266,14 +261,14 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   moreBadge: {
-    backgroundColor: M3.colors.surfaceContainerHighest,
+    backgroundColor: '#F1F5F9',
     paddingHorizontal: 6,
     paddingVertical: 3,
     borderRadius: M3.shapes.full,
   },
   moreBadgeText: {
     fontSize: 10,
-    color: M3.colors.onSurfaceVariant,
+    color: '#64748B',
     fontWeight: '700',
   },
 });

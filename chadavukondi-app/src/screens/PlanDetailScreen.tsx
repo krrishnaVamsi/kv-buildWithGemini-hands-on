@@ -97,35 +97,35 @@ export const PlanDetailScreen: React.FC<PlanDetailScreenProps> = ({
 
   return (
     <View style={styles.container}>
-      {/* M3 Top App Bar */}
+      {/* Top App Bar */}
       <View style={styles.topAppBar}>
         <TouchableOpacity style={styles.iconButton} onPress={onBack} activeOpacity={0.7}>
-          <Ionicons name="arrow-back" size={24} color={M3.colors.onSurface} />
+          <Ionicons name="arrow-back" size={22} color="#0F172A" />
         </TouchableOpacity>
 
         <View style={styles.titleCol}>
           <Text style={styles.planTitle} numberOfLines={1}>
             {plan.title}
           </Text>
-          <Text style={styles.planSubtitle}>Business Calendar Schedule</Text>
+          <Text style={styles.planSubtitle}>Study Roadmap & Schedule ⚡️</Text>
         </View>
 
-        {/* M3 Filled Tonal Button for Excel Export */}
+        {/* Export Excel Button */}
         <TouchableOpacity
-          style={styles.exportTonalButton}
+          style={styles.exportPillButton}
           onPress={handleExportExcel}
           disabled={isExporting}
           activeOpacity={0.8}
         >
-          <Ionicons name="document-text-outline" size={16} color={M3.colors.onPrimaryContainer} />
-          <Text style={styles.exportTonalText}>
+          <Ionicons name="download-outline" size={15} color={M3.colors.primary} />
+          <Text style={styles.exportPillText}>
             {isExporting ? 'Exporting...' : 'Excel'}
           </Text>
         </TouchableOpacity>
       </View>
 
       <ScrollView style={styles.scrollArea} contentContainerStyle={styles.scrollContent}>
-        {/* M3 Summary Overview Card */}
+        {/* Summary Overview Card */}
         <View style={styles.overviewCard}>
           <View style={styles.overviewRow}>
             <View style={styles.overviewStat}>
@@ -172,7 +172,7 @@ export const PlanDetailScreen: React.FC<PlanDetailScreenProps> = ({
                   Week {w.weekNumber}
                 </Text>
                 {w.isCompleted && (
-                  <Ionicons name="checkmark-circle" size={14} color={isSelected ? M3.colors.onPrimaryContainer : M3.colors.success} />
+                  <Ionicons name="checkmark-circle" size={14} color={isSelected ? '#FFFFFF' : M3.colors.success} />
                 )}
               </TouchableOpacity>
             );
@@ -183,8 +183,7 @@ export const PlanDetailScreen: React.FC<PlanDetailScreenProps> = ({
         {currentWeek && (
           <View style={styles.themeBanner}>
             <View style={styles.themeTag}>
-              <Ionicons name="sparkles" size={13} color={M3.colors.tertiary} />
-              <Text style={styles.themeTagText}>FOCUS THEME</Text>
+              <Text style={styles.themeTagText}>FOCUS THEME ✨</Text>
             </View>
             <Text style={styles.themeTitle}>{currentWeek.theme}</Text>
           </View>
@@ -192,9 +191,9 @@ export const PlanDetailScreen: React.FC<PlanDetailScreenProps> = ({
 
         {/* Day Selector Ribbon */}
         <View style={styles.sectionHeadingRow}>
-          <Text style={styles.sectionHeading}>Day Sessions</Text>
+          <Text style={styles.sectionHeading}>Daily Sessions</Text>
           <Text style={styles.sectionSub}>
-            {completedDayTopics}/{dayTopics.length} Done ({dayProgress}%)
+            {completedDayTopics}/{dayTopics.length} Cleared ({dayProgress}%)
           </Text>
         </View>
 
@@ -234,7 +233,7 @@ export const PlanDetailScreen: React.FC<PlanDetailScreenProps> = ({
         {/* Topics List Header & Add Custom Topic Button */}
         <View style={styles.topicHeaderRow}>
           <Text style={styles.topicSectionTitle}>
-            Scheduled Topics ({dayTopics.length})
+            Today's Quests ({dayTopics.length})
           </Text>
 
           <TouchableOpacity
@@ -243,15 +242,15 @@ export const PlanDetailScreen: React.FC<PlanDetailScreenProps> = ({
             activeOpacity={0.8}
           >
             <Ionicons name="add" size={16} color={M3.colors.primary} />
-            <Text style={styles.addCustomTopicText}>Add Topic</Text>
+            <Text style={styles.addCustomTopicText}>Add Quest</Text>
           </TouchableOpacity>
         </View>
 
         {/* Topics List */}
         {dayTopics.length === 0 ? (
           <View style={styles.emptyDayBox}>
-            <Ionicons name="calendar-outline" size={32} color={M3.colors.onSurfaceVariant} />
-            <Text style={styles.emptyDayText}>No topics scheduled for this day.</Text>
+            <Text style={styles.emptyDayEmoji}>🏖️</Text>
+            <Text style={styles.emptyDayText}>Rest day or no topics scheduled!</Text>
             <TouchableOpacity
               style={styles.addTopicQuickBtn}
               onPress={() => setAddTopicModalVisible(true)}
@@ -270,7 +269,7 @@ export const PlanDetailScreen: React.FC<PlanDetailScreenProps> = ({
         )}
       </ScrollView>
 
-      {/* M3 Add Custom Topic Dialog Modal */}
+      {/* Add Custom Topic Dialog Modal */}
       <Modal
         visible={addTopicModalVisible}
         transparent
@@ -278,35 +277,35 @@ export const PlanDetailScreen: React.FC<PlanDetailScreenProps> = ({
         onRequestClose={() => setAddTopicModalVisible(false)}
       >
         <View style={styles.modalBackdrop}>
-          <View style={styles.m3DialogCard}>
+          <View style={styles.dialogCard}>
             <View style={styles.modalHeader}>
               <View style={styles.modalHeaderIcon}>
-                <Ionicons name="create-outline" size={20} color={M3.colors.primary} />
+                <Ionicons name="sparkles" size={18} color={M3.colors.primary} />
               </View>
-              <Text style={styles.modalTitle}>Add Custom Topic</Text>
+              <Text style={styles.modalTitle}>Add Custom Quest</Text>
             </View>
 
             <Text style={styles.modalSubtitle}>
-              Inserting into Week {selectedWeekIndex + 1}, Day {selectedDayIndex + 1}
+              Adding to Week {selectedWeekIndex + 1}, Day {selectedDayIndex + 1}
             </Text>
 
             <View style={styles.formGroup}>
               <Text style={styles.inputLabel}>Topic Title *</Text>
               <TextInput
                 style={styles.dialogInput}
-                placeholder="e.g., Dynamic Programming Revision"
-                placeholderTextColor={M3.colors.outline}
+                placeholder="e.g. Master React Hooks & Memo"
+                placeholderTextColor="#94A3B8"
                 value={newTopicTitle}
                 onChangeText={setNewTopicTitle}
               />
             </View>
 
             <View style={styles.formGroup}>
-              <Text style={styles.inputLabel}>Key Notes / Concepts (Optional)</Text>
+              <Text style={styles.inputLabel}>Key Notes / Resources (Optional)</Text>
               <TextInput
                 style={[styles.dialogInput, styles.dialogInputMulti]}
-                placeholder="e.g., Focus on memoization and knapsack patterns"
-                placeholderTextColor={M3.colors.outline}
+                placeholder="e.g. Watch Dave Gray tutorial & build counter demo"
+                placeholderTextColor="#94A3B8"
                 multiline
                 numberOfLines={3}
                 value={newTopicSummary}
@@ -315,11 +314,11 @@ export const PlanDetailScreen: React.FC<PlanDetailScreenProps> = ({
             </View>
 
             <View style={styles.formGroup}>
-              <Text style={styles.inputLabel}>Study Hours</Text>
+              <Text style={styles.inputLabel}>Estimated Hours</Text>
               <TextInput
                 style={styles.dialogInput}
                 placeholder="1.5"
-                placeholderTextColor={M3.colors.outline}
+                placeholderTextColor="#94A3B8"
                 keyboardType="numeric"
                 value={newTopicHours}
                 onChangeText={setNewTopicHours}
@@ -339,7 +338,7 @@ export const PlanDetailScreen: React.FC<PlanDetailScreenProps> = ({
                 style={styles.dialogFilledButton}
                 onPress={handleAddCustomTopic}
               >
-                <Text style={styles.dialogFilledButtonLabel}>Add to Schedule</Text>
+                <Text style={styles.dialogFilledButtonLabel}>Add Quest ⚡️</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -352,24 +351,24 @@ export const PlanDetailScreen: React.FC<PlanDetailScreenProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: M3.colors.surface,
+    backgroundColor: '#F8FAFC',
   },
   topAppBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingTop: 12,
-    paddingBottom: 12,
-    backgroundColor: M3.colors.surface,
+    paddingHorizontal: 18,
+    paddingTop: 14,
+    paddingBottom: 14,
+    backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
-    borderBottomColor: M3.colors.outlineVariant,
+    borderBottomColor: '#E2E8F0',
     gap: 12,
   },
   iconButton: {
-    width: 40,
-    height: 40,
+    width: 38,
+    height: 38,
     borderRadius: M3.shapes.full,
-    backgroundColor: M3.colors.surfaceContainerHigh,
+    backgroundColor: '#F1F5F9',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -378,25 +377,25 @@ const styles = StyleSheet.create({
   },
   planTitle: {
     ...M3.typography.titleMedium,
-    color: M3.colors.onSurface,
+    color: '#0F172A',
     fontWeight: '700',
   },
   planSubtitle: {
     ...M3.typography.bodySmall,
-    color: M3.colors.onSurfaceVariant,
+    color: '#64748B',
   },
-  exportTonalButton: {
+  exportPillButton: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: M3.colors.primaryContainer,
     paddingHorizontal: 12,
     paddingVertical: 7,
     borderRadius: M3.shapes.full,
-    gap: 6,
+    gap: 5,
   },
-  exportTonalText: {
+  exportPillText: {
     ...M3.typography.labelSmall,
-    color: M3.colors.onPrimaryContainer,
+    color: M3.colors.primaryDark,
     fontWeight: '700',
   },
   scrollArea: {
@@ -407,12 +406,12 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
   },
   overviewCard: {
-    backgroundColor: M3.colors.surfaceContainerLow,
-    borderRadius: M3.shapes.extraLarge,
-    padding: 16,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 22,
+    padding: 18,
     marginBottom: 20,
     borderWidth: 1,
-    borderColor: M3.colors.outlineVariant,
+    borderColor: '#E2E8F0',
     ...M3.elevation.level1,
   },
   overviewRow: {
@@ -429,13 +428,13 @@ const styles = StyleSheet.create({
   },
   overviewStatLabel: {
     ...M3.typography.labelSmall,
-    color: M3.colors.onSurfaceVariant,
+    color: '#64748B',
     marginTop: 2,
   },
   overviewDivider: {
     width: 1,
-    height: 32,
-    backgroundColor: M3.colors.outlineVariant,
+    height: 34,
+    backgroundColor: '#E2E8F0',
   },
   sectionHeadingRow: {
     flexDirection: 'row',
@@ -445,11 +444,11 @@ const styles = StyleSheet.create({
   },
   sectionHeading: {
     ...M3.typography.titleMedium,
-    color: M3.colors.onSurface,
+    color: '#0F172A',
   },
   sectionSub: {
     ...M3.typography.labelSmall,
-    color: M3.colors.onSurfaceVariant,
+    color: '#64748B',
   },
   weeksCarousel: {
     gap: 8,
@@ -458,61 +457,62 @@ const styles = StyleSheet.create({
   weekPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: M3.colors.surfaceContainerHigh,
+    backgroundColor: '#FFFFFF',
     paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingVertical: 9,
     borderRadius: M3.shapes.full,
     borderWidth: 1,
-    borderColor: M3.colors.outlineVariant,
+    borderColor: '#E2E8F0',
     gap: 6,
+    ...M3.elevation.level1,
   },
   weekPillActive: {
-    backgroundColor: M3.colors.primaryContainer,
+    backgroundColor: M3.colors.primary,
     borderColor: M3.colors.primary,
   },
   weekPillText: {
     ...M3.typography.labelMedium,
-    color: M3.colors.onSurfaceVariant,
+    color: '#475569',
   },
   weekPillTextActive: {
-    color: M3.colors.onPrimaryContainer,
+    color: '#FFFFFF',
     fontWeight: '700',
   },
   themeBanner: {
-    backgroundColor: M3.colors.tertiaryContainer,
-    borderRadius: M3.shapes.large,
+    backgroundColor: '#EEF2FF',
+    borderRadius: 16,
     padding: 14,
     marginBottom: 20,
+    borderLeftWidth: 3,
+    borderLeftColor: M3.colors.primary,
   },
   themeTag: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
     marginBottom: 4,
   },
   themeTagText: {
     fontSize: 10,
     fontWeight: '800',
-    color: M3.colors.tertiary,
+    color: M3.colors.primary,
     letterSpacing: 0.8,
   },
   themeTitle: {
     ...M3.typography.bodyMedium,
-    color: M3.colors.onTertiaryContainer,
-    fontWeight: '600',
+    color: '#312E81',
+    fontWeight: '700',
   },
   daysCarousel: {
     gap: 10,
     paddingBottom: 20,
   },
   dayTab: {
-    width: 72,
+    width: 74,
     paddingVertical: 10,
-    borderRadius: M3.shapes.large,
-    backgroundColor: M3.colors.surfaceContainerLow,
+    borderRadius: 16,
+    backgroundColor: '#FFFFFF',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: M3.colors.outlineVariant,
+    borderColor: '#E2E8F0',
+    ...M3.elevation.level1,
   },
   dayTabActive: {
     backgroundColor: M3.colors.primary,
@@ -521,18 +521,19 @@ const styles = StyleSheet.create({
   },
   dayTabTitle: {
     ...M3.typography.labelMedium,
-    color: M3.colors.onSurface,
+    color: '#0F172A',
   },
   dayTabTitleActive: {
-    color: M3.colors.onPrimary,
+    color: '#FFFFFF',
   },
   dayTabDate: {
     fontSize: 10,
-    color: M3.colors.onSurfaceVariant,
+    color: '#64748B',
     marginTop: 2,
+    fontWeight: '600',
   },
   dayTabDateActive: {
-    color: '#D8DBFF',
+    color: '#C7D2FE',
   },
   dayDoneBadge: {
     position: 'absolute',
@@ -541,7 +542,7 @@ const styles = StyleSheet.create({
     width: 16,
     height: 16,
     borderRadius: 8,
-    backgroundColor: M3.colors.success,
+    backgroundColor: '#10B981',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -553,12 +554,12 @@ const styles = StyleSheet.create({
   },
   topicSectionTitle: {
     ...M3.typography.titleMedium,
-    color: M3.colors.onSurface,
+    color: '#0F172A',
   },
   addCustomTopicChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: M3.colors.surfaceContainerHigh,
+    backgroundColor: M3.colors.primaryContainer,
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: M3.shapes.full,
@@ -566,21 +567,24 @@ const styles = StyleSheet.create({
   },
   addCustomTopicText: {
     ...M3.typography.labelMedium,
-    color: M3.colors.primary,
+    color: M3.colors.primaryDark,
   },
   emptyDayBox: {
-    backgroundColor: M3.colors.surfaceContainerLow,
-    borderRadius: M3.shapes.large,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 18,
     padding: 28,
     alignItems: 'center',
     marginTop: 8,
     borderWidth: 1,
-    borderColor: M3.colors.outlineVariant,
+    borderColor: '#E2E8F0',
+  },
+  emptyDayEmoji: {
+    fontSize: 32,
+    marginBottom: 8,
   },
   emptyDayText: {
     ...M3.typography.bodyMedium,
-    color: M3.colors.onSurfaceVariant,
-    marginTop: 8,
+    color: '#64748B',
     marginBottom: 12,
   },
   addTopicQuickBtn: {
@@ -591,20 +595,20 @@ const styles = StyleSheet.create({
   },
   addTopicQuickBtnText: {
     ...M3.typography.labelMedium,
-    color: M3.colors.onPrimary,
+    color: '#FFFFFF',
   },
   modalBackdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.45)',
+    backgroundColor: 'rgba(15, 23, 42, 0.55)',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
   },
-  m3DialogCard: {
+  dialogCard: {
     width: '100%',
     maxWidth: 480,
-    backgroundColor: M3.colors.surfaceContainerHigh,
-    borderRadius: M3.shapes.extraLarge,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
     padding: 24,
     ...M3.elevation.level3,
   },
@@ -615,8 +619,8 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   modalHeaderIcon: {
-    width: 36,
-    height: 36,
+    width: 34,
+    height: 34,
     borderRadius: M3.shapes.full,
     backgroundColor: M3.colors.primaryContainer,
     justifyContent: 'center',
@@ -624,11 +628,11 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     ...M3.typography.titleLarge,
-    color: M3.colors.onSurface,
+    color: '#0F172A',
   },
   modalSubtitle: {
     ...M3.typography.bodySmall,
-    color: M3.colors.onSurfaceVariant,
+    color: '#64748B',
     marginBottom: 18,
   },
   formGroup: {
@@ -636,18 +640,19 @@ const styles = StyleSheet.create({
   },
   inputLabel: {
     ...M3.typography.labelSmall,
-    color: M3.colors.onSurfaceVariant,
+    color: '#475569',
     marginBottom: 6,
   },
   dialogInput: {
-    backgroundColor: M3.colors.surfaceContainerLowest,
+    backgroundColor: '#F8FAFC',
     borderWidth: 1,
-    borderColor: M3.colors.outlineVariant,
-    borderRadius: M3.shapes.medium,
+    borderColor: '#E2E8F0',
+    borderRadius: 12,
     paddingHorizontal: 14,
     paddingVertical: 10,
     fontSize: 14,
-    color: M3.colors.onSurface,
+    color: '#0F172A',
+    fontFamily: M3.fonts.body,
   },
   dialogInputMulti: {
     height: 70,
@@ -665,7 +670,7 @@ const styles = StyleSheet.create({
   },
   dialogTextButtonLabel: {
     ...M3.typography.labelLarge,
-    color: M3.colors.primary,
+    color: '#64748B',
   },
   dialogFilledButton: {
     backgroundColor: M3.colors.primary,
@@ -676,6 +681,6 @@ const styles = StyleSheet.create({
   },
   dialogFilledButtonLabel: {
     ...M3.typography.labelLarge,
-    color: M3.colors.onPrimary,
+    color: '#FFFFFF',
   },
 });

@@ -38,7 +38,7 @@ export const ChatPlannerScreen: React.FC<ChatPlannerScreenProps> = ({
     {
       id: 'msg-1',
       sender: 'ai',
-      text: 'నమస్కారం! Welcome to Chadavukondi Firstu! 📚🔥\n\nWhat subject, skill, or competitive exam would you like to build an unbeatable study plan for?',
+      text: 'Yo! Welcome to Chadavukondi Firstu! ⚡️📚\n\nWhat topic, skill, or exam do you want to conquer? (e.g. Full Stack Dev, Data Science, UPSC, NEET, DSA...)',
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     },
   ]);
@@ -74,7 +74,7 @@ export const ChatPlannerScreen: React.FC<ChatPlannerScreenProps> = ({
         {
           id: `msg-${Date.now() + 1}`,
           sender: 'ai',
-          text: `Awesome! "${text}" is a great goal. 🗓️\n\nHow many days per week can you allocate for focused study? (e.g., 3 to 7 days)`,
+          text: `“${text}” — great pick! Let's lock it in. 🎯\n\nHow many days a week can you dedicate to study sessions?`,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         },
       ]);
@@ -88,7 +88,7 @@ export const ChatPlannerScreen: React.FC<ChatPlannerScreenProps> = ({
         {
           id: `msg-${Date.now() + 1}`,
           sender: 'ai',
-          text: `Got it: ${validDays} days per week. ⏰\n\nHow many hours can you dedicate each study day? (e.g., 1 to 8 hours)`,
+          text: `Locked in for ${validDays} days/week. 🗓️\n\nHow many hours per study day can you put in? (Be real with yourself!)`,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         },
       ]);
@@ -102,7 +102,7 @@ export const ChatPlannerScreen: React.FC<ChatPlannerScreenProps> = ({
         {
           id: `msg-${Date.now() + 1}`,
           sender: 'ai',
-          text: `Perfect: ${validHours} hours per day. 🎯\n\nIn how many months do you aim to master this topic? (e.g., 1, 2, or 3 months)`,
+          text: `${validHours} hrs/day, respect the grind. ⏰\n\nWhat is your target timeline in months to finish this quest?`,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         },
       ]);
@@ -116,7 +116,7 @@ export const ChatPlannerScreen: React.FC<ChatPlannerScreenProps> = ({
       const generatingMsg: Message = {
         id: `msg-${Date.now() + 1}`,
         sender: 'ai',
-        text: `“ఇంకా మాట్లాడకండి, చదువుకోండి ఫస్టు!” 🚀\n\nCreating your personalized study calendar for "${subject}" (${validMonths} months, ${daysPerWeek} days/wk, ${hoursPerDay} hrs/day)...`,
+        text: `“Inka matladakandi, Chadavukondi Firstu!” 🚀🔥\n\nCooking your personalized day-by-day roadmap for “${subject}” (${validMonths} months, ${daysPerWeek} days/wk, ${hoursPerDay} hrs/day)...`,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };
       setMessages([...nextMessages, generatingMsg]);
@@ -142,7 +142,7 @@ export const ChatPlannerScreen: React.FC<ChatPlannerScreenProps> = ({
           {
             id: `msg-${Date.now() + 2}`,
             sender: 'ai',
-            text: `Error generating plan: ${err.message || 'Unknown error'}. Please try again.`,
+            text: `Whoops! Encountered a bump: ${err.message || 'Unknown issue'}. Let's retry!`,
             timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           },
         ]);
@@ -157,14 +157,14 @@ export const ChatPlannerScreen: React.FC<ChatPlannerScreenProps> = ({
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <View style={styles.container}>
-        {/* M3 Top App Bar */}
+        {/* App Bar */}
         <View style={styles.topAppBar}>
           <TouchableOpacity style={styles.iconButton} onPress={onBack} activeOpacity={0.7}>
-            <Ionicons name="arrow-back" size={24} color={M3.colors.onSurface} />
+            <Ionicons name="arrow-back" size={22} color="#0F172A" />
           </TouchableOpacity>
           <View style={styles.headerInfo}>
-            <Text style={styles.headerTitle}>AI Study Planner</Text>
-            <Text style={styles.headerSubtitle}>Material You Assistant</Text>
+            <Text style={styles.headerTitle}>AI Study Architect ⚡️</Text>
+            <Text style={styles.headerSubtitle}>Building your custom game plan</Text>
           </View>
         </View>
 
@@ -184,7 +184,7 @@ export const ChatPlannerScreen: React.FC<ChatPlannerScreenProps> = ({
             >
               {m.sender === 'ai' && (
                 <View style={styles.avatarCircle}>
-                  <Ionicons name="school" size={16} color={M3.colors.primary} />
+                  <Text style={styles.avatarEmoji}>🤖</Text>
                 </View>
               )}
               <View
@@ -216,22 +216,22 @@ export const ChatPlannerScreen: React.FC<ChatPlannerScreenProps> = ({
           {loading && (
             <View style={styles.loadingCard}>
               <ActivityIndicator size="small" color={M3.colors.primary} />
-              <Text style={styles.loadingText}>Synthesizing syllabus roadmap...</Text>
+              <Text style={styles.loadingText}>Synthesizing your game plan...</Text>
             </View>
           )}
         </ScrollView>
 
-        {/* M3 Quick Suggestion Chips */}
+        {/* Quick Suggestion Pills */}
         {currentStep === 'ask_days' && (
           <View style={styles.chipsRow}>
-            {['3 Days', '4 Days', '5 Days', '6 Days', '7 Days'].map((d) => (
+            {['3 Days/wk', '4 Days/wk', '5 Days/wk', '6 Days/wk', '7 Days/wk'].map((d) => (
               <TouchableOpacity
                 key={d}
                 style={styles.suggestionChip}
                 onPress={() => handleSend(d)}
                 activeOpacity={0.8}
               >
-                <Text style={styles.suggestionChipText}>{d}</Text>
+                <Text style={styles.suggestionChipText}>⚡️ {d}</Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -246,7 +246,7 @@ export const ChatPlannerScreen: React.FC<ChatPlannerScreenProps> = ({
                 onPress={() => handleSend(h)}
                 activeOpacity={0.8}
               >
-                <Text style={styles.suggestionChipText}>{h}</Text>
+                <Text style={styles.suggestionChipText}>⏰ {h}/day</Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -254,29 +254,29 @@ export const ChatPlannerScreen: React.FC<ChatPlannerScreenProps> = ({
 
         {currentStep === 'ask_months' && (
           <View style={styles.chipsRow}>
-            {['1 Month', '2 Months', '3 Months', '6 Months'].map((m) => (
+            {['1 Month (Sprint)', '2 Months', '3 Months (Ideal)', '6 Months'].map((m) => (
               <TouchableOpacity
                 key={m}
                 style={styles.suggestionChip}
                 onPress={() => handleSend(m)}
                 activeOpacity={0.8}
               >
-                <Text style={styles.suggestionChipText}>{m}</Text>
+                <Text style={styles.suggestionChipText}>🎯 {m}</Text>
               </TouchableOpacity>
             ))}
           </View>
         )}
 
-        {/* M3 Bottom Dock Input */}
+        {/* Bottom Dock Input */}
         <View style={styles.bottomDock}>
           <TextInput
             style={styles.dockInput}
             placeholder={
               currentStep === 'ask_subject'
-                ? 'e.g. Python, UPSC, React Native...'
-                : 'Type your answer...'
+                ? 'Type subject or skill here...'
+                : 'Your response...'
             }
-            placeholderTextColor={M3.colors.onSurfaceVariant}
+            placeholderTextColor="#94A3B8"
             value={inputVal}
             onChangeText={setInputVal}
             onSubmitEditing={() => handleSend()}
@@ -290,7 +290,7 @@ export const ChatPlannerScreen: React.FC<ChatPlannerScreenProps> = ({
             disabled={!inputVal.trim() || loading}
             activeOpacity={0.85}
           >
-            <Ionicons name="arrow-up" size={22} color={M3.colors.onPrimary} />
+            <Ionicons name="arrow-up" size={20} color="#FFFFFF" />
           </TouchableOpacity>
         </View>
       </View>
@@ -304,24 +304,24 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: M3.colors.surface,
+    backgroundColor: '#F8FAFC',
   },
   topAppBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingTop: 12,
-    paddingBottom: 12,
-    backgroundColor: M3.colors.surface,
+    paddingHorizontal: 18,
+    paddingTop: 14,
+    paddingBottom: 14,
+    backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
-    borderBottomColor: M3.colors.outlineVariant,
+    borderBottomColor: '#E2E8F0',
     gap: 12,
   },
   iconButton: {
-    width: 40,
-    height: 40,
+    width: 38,
+    height: 38,
     borderRadius: M3.shapes.full,
-    backgroundColor: M3.colors.surfaceContainerHigh,
+    backgroundColor: '#F1F5F9',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -330,11 +330,12 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     ...M3.typography.titleLarge,
-    color: M3.colors.onSurface,
+    color: '#0F172A',
+    fontWeight: '700',
   },
   headerSubtitle: {
     ...M3.typography.bodySmall,
-    color: M3.colors.onSurfaceVariant,
+    color: '#64748B',
   },
   messagesScroll: {
     flex: 1,
@@ -356,54 +357,60 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   avatarCircle: {
-    width: 32,
-    height: 32,
+    width: 34,
+    height: 34,
     borderRadius: M3.shapes.full,
     backgroundColor: M3.colors.primaryContainer,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 4,
   },
+  avatarEmoji: {
+    fontSize: 16,
+  },
   bubble: {
     maxWidth: '82%',
     paddingHorizontal: 16,
     paddingVertical: 12,
   },
-  // Asymmetric M3 bubble corners
   aiBubble: {
-    backgroundColor: M3.colors.surfaceContainerHigh,
-    borderTopLeftRadius: M3.shapes.large,
-    borderTopRightRadius: M3.shapes.large,
-    borderBottomRightRadius: M3.shapes.large,
-    borderBottomLeftRadius: M3.shapes.extraSmall,
+    backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: 18,
+    borderTopRightRadius: 18,
+    borderBottomRightRadius: 18,
+    borderBottomLeftRadius: 4,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    ...M3.elevation.level1,
   },
   userBubble: {
     backgroundColor: M3.colors.primary,
-    borderTopLeftRadius: M3.shapes.large,
-    borderTopRightRadius: M3.shapes.large,
-    borderBottomLeftRadius: M3.shapes.large,
-    borderBottomRightRadius: M3.shapes.extraSmall,
+    borderTopLeftRadius: 18,
+    borderTopRightRadius: 18,
+    borderBottomLeftRadius: 18,
+    borderBottomRightRadius: 4,
+    ...M3.elevation.level1,
   },
   bubbleText: {
     ...M3.typography.bodyMedium,
     lineHeight: 22,
   },
   aiText: {
-    color: M3.colors.onSurface,
+    color: '#0F172A',
   },
   userText: {
-    color: M3.colors.onPrimary,
+    color: '#FFFFFF',
   },
   timestamp: {
     fontSize: 10,
     marginTop: 4,
   },
   aiTimestamp: {
-    color: M3.colors.onSurfaceVariant,
+    color: '#94A3B8',
     textAlign: 'left',
   },
   userTimestamp: {
-    color: '#D8DBFF',
+    color: '#C7D2FE',
     textAlign: 'right',
   },
   loadingCard: {
@@ -411,7 +418,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: M3.colors.primaryContainer,
     padding: 14,
-    borderRadius: M3.shapes.large,
+    borderRadius: 16,
     gap: 12,
     alignSelf: 'flex-start',
     marginTop: 8,
@@ -428,16 +435,17 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   suggestionChip: {
-    backgroundColor: M3.colors.surfaceContainerHigh,
+    backgroundColor: '#FFFFFF',
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: M3.shapes.full,
     borderWidth: 1,
-    borderColor: M3.colors.outlineVariant,
+    borderColor: '#CBD5E1',
+    ...M3.elevation.level1,
   },
   suggestionChipText: {
     ...M3.typography.labelSmall,
-    color: M3.colors.primary,
+    color: M3.colors.primaryDark,
     fontWeight: '700',
   },
   bottomDock: {
@@ -445,23 +453,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: M3.colors.surface,
+    backgroundColor: '#FFFFFF',
     borderTopWidth: 1,
-    borderTopColor: M3.colors.outlineVariant,
+    borderTopColor: '#E2E8F0',
     gap: 10,
   },
   dockInput: {
     flex: 1,
-    backgroundColor: M3.colors.surfaceContainerHighest,
+    backgroundColor: '#F1F5F9',
     borderRadius: M3.shapes.full,
     paddingHorizontal: 18,
     paddingVertical: 12,
     fontSize: 14,
-    color: M3.colors.onSurface,
+    color: '#0F172A',
+    fontFamily: M3.fonts.body,
   },
   sendButton: {
-    width: 46,
-    height: 46,
+    width: 44,
+    height: 44,
     borderRadius: M3.shapes.full,
     backgroundColor: M3.colors.primary,
     justifyContent: 'center',
@@ -469,7 +478,7 @@ const styles = StyleSheet.create({
     ...M3.elevation.level1,
   },
   sendButtonDisabled: {
-    backgroundColor: M3.colors.surfaceContainerHighest,
-    opacity: 0.5,
+    backgroundColor: '#CBD5E1',
+    opacity: 0.6,
   },
 });
