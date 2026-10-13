@@ -223,10 +223,6 @@ export const HomeScreen: React.FC = () => {
               </Text>
               <Ionicons name="arrow-forward" size={16} color={theme.colors.onPrimary} />
             </TouchableOpacity>
-
-            <View style={styles.memeTag}>
-              <Text style={styles.memeTagText}>#PokiriMode ⚡️</Text>
-            </View>
           </View>
         </View>
 
