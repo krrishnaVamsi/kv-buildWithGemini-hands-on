@@ -1,26 +1,50 @@
-# Authoring notes, not participant-facing
-context.md
-
-# macOS noise
-.DS_Store
-
-# record-demo artifacts (Playwright install + temp recording dir)
+# Dependencies
 node_modules/
-package-lock.json
-.video_tmp/
+.pnp
+.pnp.js
 
-# --- added by publish-to-github skill ---
-.venv/
-venv/
-__pycache__/
-*.pyc
-node_modules/
-.video_tmp/
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Testing
+coverage/
+
+# Production builds
+build/
+
+# Native
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Metro
+.metro-health-check*
+
+# Debug logs
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# OS Noise
 .DS_Store
+Thumbs.db
+*.pem
+
+# Local env files & keys (NEVER commit secrets or API keys)
 .env
 *.env
-application_default_credentials.json
+.env*.local
+*.local
 *-sa-key.json
 service-account*.json
-# Keep the demo GIF (README embeds it); ignore the large raw recording.
-*.webm
+application_default_credentials.json
+
+# TypeScript cache
+*.tsbuildinfo
