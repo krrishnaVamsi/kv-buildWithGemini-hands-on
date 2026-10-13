@@ -1,10 +1,17 @@
 import React, { useEffect } from 'react';
 import { Platform } from 'react-native';
+import * as Font from 'expo-font';
+import { Ionicons } from '@expo/vector-icons';
 import { HomeScreen } from './src/screens/HomeScreen';
 import { ThemeProvider } from './src/theme/ThemeContext';
 
 export default function App() {
   useEffect(() => {
+    // Explicitly preload vector icon fonts so web never displays missing glyphs
+    Font.loadAsync(Ionicons.font).catch((err) => {
+      console.warn('Error preloading Ionicons:', err);
+    });
+
     if (Platform.OS === 'web' && typeof document !== 'undefined') {
       const fontLinkId = 'google-fonts-genz';
       if (!document.getElementById(fontLinkId)) {
@@ -17,8 +24,10 @@ export default function App() {
 
         const style = document.createElement('style');
         style.innerHTML = `
-          * {
+          body, input, textarea, select, button {
             font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+          }
+          * {
             box-sizing: border-box;
           }
           body, html, #root {
