@@ -14,7 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { generateStudyPlanWithGemini } from '../api/gemini';
 import { savePlan } from '../storage/planStorage';
 import { StudyPlan } from '../types';
-import { M3 } from '../theme/material3';
+import { useTheme } from '../theme/ThemeContext';
 
 interface Message {
   id: string;
@@ -34,11 +34,12 @@ export const ChatPlannerScreen: React.FC<ChatPlannerScreenProps> = ({
   onBack,
   onPlanCreated,
 }) => {
+  const { isDark, theme } = useTheme();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 'msg-1',
       sender: 'ai',
-      text: 'Yo! Welcome to Chadavukondi Firstu! ⚡️📚\n\nWhat topic, skill, or exam do you want to conquer? (e.g. Full Stack Dev, Data Science, UPSC, NEET, DSA...)',
+      text: 'Yo! Welcome to Chadavukondi Firstu! ⚡️\n\nWhat topic, skill, or exam do you want to conquer? (e.g. Full Stack Dev, Data Science, UPSC, NEET, DSA...)',
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     },
   ]);
@@ -74,7 +75,7 @@ export const ChatPlannerScreen: React.FC<ChatPlannerScreenProps> = ({
         {
           id: `msg-${Date.now() + 1}`,
           sender: 'ai',
-          text: `“${text}” — great pick! Let's lock it in. 🎯\n\nHow many days a week can you dedicate to study sessions?`,
+          text: `“${text}” — great pick! Let's lock it in. 🎯\n\nHow many days a week can you dedicate to sessions?`,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         },
       ]);
@@ -88,7 +89,7 @@ export const ChatPlannerScreen: React.FC<ChatPlannerScreenProps> = ({
         {
           id: `msg-${Date.now() + 1}`,
           sender: 'ai',
-          text: `Locked in for ${validDays} days/week. 🗓️\n\nHow many hours per study day can you put in? (Be real with yourself!)`,
+          text: `Locked in for ${validDays} days/week. 🗓️\n\nHow many hours per day can you put in? (Be real with yourself!)`,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         },
       ]);
@@ -156,15 +157,31 @@ export const ChatPlannerScreen: React.FC<ChatPlannerScreenProps> = ({
       style={styles.keyboardContainer}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: theme.colors.surface }]}>
         {/* App Bar */}
-        <View style={styles.topAppBar}>
-          <TouchableOpacity style={styles.iconButton} onPress={onBack} activeOpacity={0.7}>
-            <Ionicons name="arrow-back" size={22} color="#0F172A" />
+        <View
+          style={[
+            styles.topAppBar,
+            {
+              backgroundColor: theme.colors.cardBg,
+              borderBottomColor: theme.colors.cardBorder,
+            },
+          ]}
+        >
+          <TouchableOpacity
+            style={[styles.iconButton, { backgroundColor: theme.colors.subtleBg }]}
+            onPress={onBack}
+            activeOpacity={0.7}
+          >
+            <Ionicons name="arrow-back" size={22} color={theme.colors.onSurface} />
           </TouchableOpacity>
           <View style={styles.headerInfo}>
-            <Text style={styles.headerTitle}>AI Study Architect ⚡️</Text>
-            <Text style={styles.headerSubtitle}>Building your custom game plan</Text>
+            <Text style={[styles.headerTitle, { color: theme.colors.onSurface }]}>
+              AI Architect ⚡️
+            </Text>
+            <Text style={[styles.headerSubtitle, { color: theme.colors.onSurfaceVariant }]}>
+              Building your custom game plan
+            </Text>
           </View>
         </View>
 
@@ -183,20 +200,35 @@ export const ChatPlannerScreen: React.FC<ChatPlannerScreenProps> = ({
               ]}
             >
               {m.sender === 'ai' && (
-                <View style={styles.avatarCircle}>
+                <View
+                  style={[
+                    styles.avatarCircle,
+                    { backgroundColor: theme.colors.primaryContainer },
+                  ]}
+                >
                   <Text style={styles.avatarEmoji}>🤖</Text>
                 </View>
               )}
               <View
                 style={[
                   styles.bubble,
-                  m.sender === 'user' ? styles.userBubble : styles.aiBubble,
+                  m.sender === 'user'
+                    ? [styles.userBubble, { backgroundColor: theme.colors.primary }]
+                    : [
+                        styles.aiBubble,
+                        {
+                          backgroundColor: theme.colors.cardBg,
+                          borderColor: theme.colors.cardBorder,
+                        },
+                      ],
                 ]}
               >
                 <Text
                   style={[
                     styles.bubbleText,
-                    m.sender === 'user' ? styles.userText : styles.aiText,
+                    m.sender === 'user'
+                      ? [styles.userText, { color: theme.colors.onPrimary }]
+                      : [styles.aiText, { color: theme.colors.onSurface }],
                   ]}
                 >
                   {m.text}
@@ -204,7 +236,9 @@ export const ChatPlannerScreen: React.FC<ChatPlannerScreenProps> = ({
                 <Text
                   style={[
                     styles.timestamp,
-                    m.sender === 'user' ? styles.userTimestamp : styles.aiTimestamp,
+                    m.sender === 'user'
+                      ? [styles.userTimestamp, { color: isDark ? '#312E81' : '#C7D2FE' }]
+                      : [styles.aiTimestamp, { color: theme.colors.onSurfaceVariant }],
                   ]}
                 >
                   {m.timestamp}
@@ -214,9 +248,21 @@ export const ChatPlannerScreen: React.FC<ChatPlannerScreenProps> = ({
           ))}
 
           {loading && (
-            <View style={styles.loadingCard}>
-              <ActivityIndicator size="small" color={M3.colors.primary} />
-              <Text style={styles.loadingText}>Synthesizing your game plan...</Text>
+            <View
+              style={[
+                styles.loadingCard,
+                { backgroundColor: theme.colors.primaryContainer },
+              ]}
+            >
+              <ActivityIndicator size="small" color={theme.colors.primary} />
+              <Text
+                style={[
+                  styles.loadingText,
+                  { color: theme.colors.onPrimaryContainer },
+                ]}
+              >
+                Synthesizing your game plan...
+              </Text>
             </View>
           )}
         </ScrollView>
@@ -227,11 +273,24 @@ export const ChatPlannerScreen: React.FC<ChatPlannerScreenProps> = ({
             {['3 Days/wk', '4 Days/wk', '5 Days/wk', '6 Days/wk', '7 Days/wk'].map((d) => (
               <TouchableOpacity
                 key={d}
-                style={styles.suggestionChip}
+                style={[
+                  styles.suggestionChip,
+                  {
+                    backgroundColor: theme.colors.cardBg,
+                    borderColor: theme.colors.cardBorder,
+                  },
+                ]}
                 onPress={() => handleSend(d)}
                 activeOpacity={0.8}
               >
-                <Text style={styles.suggestionChipText}>⚡️ {d}</Text>
+                <Text
+                  style={[
+                    styles.suggestionChipText,
+                    { color: theme.colors.primary },
+                  ]}
+                >
+                  ⚡️ {d}
+                </Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -242,11 +301,24 @@ export const ChatPlannerScreen: React.FC<ChatPlannerScreenProps> = ({
             {['1 Hour', '2 Hours', '3 Hours', '4 Hours', '6 Hours'].map((h) => (
               <TouchableOpacity
                 key={h}
-                style={styles.suggestionChip}
+                style={[
+                  styles.suggestionChip,
+                  {
+                    backgroundColor: theme.colors.cardBg,
+                    borderColor: theme.colors.cardBorder,
+                  },
+                ]}
                 onPress={() => handleSend(h)}
                 activeOpacity={0.8}
               >
-                <Text style={styles.suggestionChipText}>⏰ {h}/day</Text>
+                <Text
+                  style={[
+                    styles.suggestionChipText,
+                    { color: theme.colors.primary },
+                  ]}
+                >
+                  ⏰ {h}/day
+                </Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -257,26 +329,53 @@ export const ChatPlannerScreen: React.FC<ChatPlannerScreenProps> = ({
             {['1 Month (Sprint)', '2 Months', '3 Months (Ideal)', '6 Months'].map((m) => (
               <TouchableOpacity
                 key={m}
-                style={styles.suggestionChip}
+                style={[
+                  styles.suggestionChip,
+                  {
+                    backgroundColor: theme.colors.cardBg,
+                    borderColor: theme.colors.cardBorder,
+                  },
+                ]}
                 onPress={() => handleSend(m)}
                 activeOpacity={0.8}
               >
-                <Text style={styles.suggestionChipText}>🎯 {m}</Text>
+                <Text
+                  style={[
+                    styles.suggestionChipText,
+                    { color: theme.colors.primary },
+                  ]}
+                >
+                  🎯 {m}
+                </Text>
               </TouchableOpacity>
             ))}
           </View>
         )}
 
         {/* Bottom Dock Input */}
-        <View style={styles.bottomDock}>
+        <View
+          style={[
+            styles.bottomDock,
+            {
+              backgroundColor: theme.colors.cardBg,
+              borderTopColor: theme.colors.cardBorder,
+            },
+          ]}
+        >
           <TextInput
-            style={styles.dockInput}
+            style={[
+              styles.dockInput,
+              {
+                backgroundColor: theme.colors.subtleBg,
+                color: theme.colors.onSurface,
+              },
+            ]}
             placeholder={
               currentStep === 'ask_subject'
                 ? 'Type subject or skill here...'
                 : 'Your response...'
             }
-            placeholderTextColor="#94A3B8"
+            placeholderTextColor={theme.colors.onSurfaceVariant}
             value={inputVal}
             onChangeText={setInputVal}
             onSubmitEditing={() => handleSend()}
@@ -285,12 +384,16 @@ export const ChatPlannerScreen: React.FC<ChatPlannerScreenProps> = ({
           />
 
           <TouchableOpacity
-            style={[styles.sendButton, !inputVal.trim() && styles.sendButtonDisabled]}
+            style={[
+              styles.sendButton,
+              { backgroundColor: theme.colors.primary },
+              !inputVal.trim() && styles.sendButtonDisabled,
+            ]}
             onPress={() => handleSend()}
             disabled={!inputVal.trim() || loading}
             activeOpacity={0.85}
           >
-            <Ionicons name="arrow-up" size={20} color="#FFFFFF" />
+            <Ionicons name="arrow-up" size={20} color={theme.colors.onPrimary} />
           </TouchableOpacity>
         </View>
       </View>
@@ -304,7 +407,6 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
   },
   topAppBar: {
     flexDirection: 'row',
@@ -312,16 +414,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
     paddingTop: 14,
     paddingBottom: 14,
-    backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0',
     gap: 12,
   },
   iconButton: {
     width: 38,
     height: 38,
-    borderRadius: M3.shapes.full,
-    backgroundColor: '#F1F5F9',
+    borderRadius: 9999,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -329,13 +428,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerTitle: {
-    ...M3.typography.titleLarge,
-    color: '#0F172A',
+    fontSize: 18,
     fontWeight: '700',
   },
   headerSubtitle: {
-    ...M3.typography.bodySmall,
-    color: '#64748B',
+    fontSize: 12,
   },
   messagesScroll: {
     flex: 1,
@@ -359,8 +456,7 @@ const styles = StyleSheet.create({
   avatarCircle: {
     width: 34,
     height: 34,
-    borderRadius: M3.shapes.full,
-    backgroundColor: M3.colors.primaryContainer,
+    borderRadius: 9999,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 4,
@@ -374,49 +470,37 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   aiBubble: {
-    backgroundColor: '#FFFFFF',
     borderTopLeftRadius: 18,
     borderTopRightRadius: 18,
     borderBottomRightRadius: 18,
     borderBottomLeftRadius: 4,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-    ...M3.elevation.level1,
   },
   userBubble: {
-    backgroundColor: M3.colors.primary,
     borderTopLeftRadius: 18,
     borderTopRightRadius: 18,
     borderBottomLeftRadius: 18,
     borderBottomRightRadius: 4,
-    ...M3.elevation.level1,
   },
   bubbleText: {
-    ...M3.typography.bodyMedium,
+    fontSize: 14,
     lineHeight: 22,
   },
-  aiText: {
-    color: '#0F172A',
-  },
-  userText: {
-    color: '#FFFFFF',
-  },
+  aiText: {},
+  userText: {},
   timestamp: {
     fontSize: 10,
     marginTop: 4,
   },
   aiTimestamp: {
-    color: '#94A3B8',
     textAlign: 'left',
   },
   userTimestamp: {
-    color: '#C7D2FE',
     textAlign: 'right',
   },
   loadingCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: M3.colors.primaryContainer,
     padding: 14,
     borderRadius: 16,
     gap: 12,
@@ -424,8 +508,8 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   loadingText: {
-    ...M3.typography.labelMedium,
-    color: M3.colors.onPrimaryContainer,
+    fontSize: 13,
+    fontWeight: '600',
   },
   chipsRow: {
     flexDirection: 'row',
@@ -435,17 +519,13 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   suggestionChip: {
-    backgroundColor: '#FFFFFF',
     paddingHorizontal: 14,
     paddingVertical: 8,
-    borderRadius: M3.shapes.full,
+    borderRadius: 9999,
     borderWidth: 1,
-    borderColor: '#CBD5E1',
-    ...M3.elevation.level1,
   },
   suggestionChipText: {
-    ...M3.typography.labelSmall,
-    color: M3.colors.primaryDark,
+    fontSize: 12,
     fontWeight: '700',
   },
   bottomDock: {
@@ -453,32 +533,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: '#FFFFFF',
     borderTopWidth: 1,
-    borderTopColor: '#E2E8F0',
     gap: 10,
   },
   dockInput: {
     flex: 1,
-    backgroundColor: '#F1F5F9',
-    borderRadius: M3.shapes.full,
+    borderRadius: 9999,
     paddingHorizontal: 18,
     paddingVertical: 12,
     fontSize: 14,
-    color: '#0F172A',
-    fontFamily: M3.fonts.body,
   },
   sendButton: {
     width: 44,
     height: 44,
-    borderRadius: M3.shapes.full,
-    backgroundColor: M3.colors.primary,
+    borderRadius: 9999,
     justifyContent: 'center',
     alignItems: 'center',
-    ...M3.elevation.level1,
   },
   sendButtonDisabled: {
-    backgroundColor: '#CBD5E1',
-    opacity: 0.6,
+    opacity: 0.5,
   },
 });

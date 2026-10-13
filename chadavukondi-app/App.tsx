@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Platform } from 'react-native';
 import { HomeScreen } from './src/screens/HomeScreen';
+import { ThemeProvider } from './src/theme/ThemeContext';
 
 export default function App() {
   useEffect(() => {
@@ -14,14 +15,17 @@ export default function App() {
           'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&display=swap';
         document.head.appendChild(link);
 
-        // Inject global css to reset and set default font family
         const style = document.createElement('style');
         style.innerHTML = `
           * {
             font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            box-sizing: border-box;
           }
-          .font-heading {
-            font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif !important;
+          body, html, #root {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            transition: background-color 0.2s ease;
           }
         `;
         document.head.appendChild(style);
@@ -29,5 +33,9 @@ export default function App() {
     }
   }, []);
 
-  return <HomeScreen />;
+  return (
+    <ThemeProvider>
+      <HomeScreen />
+    </ThemeProvider>
+  );
 }

@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { StudyTopic, TopicStatus } from '../types';
-import { M3 } from '../theme/material3';
+import { useTheme } from '../theme/ThemeContext';
 
 interface TopicItemProps {
   topic: StudyTopic;
@@ -10,27 +10,55 @@ interface TopicItemProps {
 }
 
 export const TopicItem: React.FC<TopicItemProps> = ({ topic, onStatusChange }) => {
+  const { isDark, theme } = useTheme();
   const isCompleted = topic.status === 'completed';
   const isReviewLater = topic.status === 'review_later';
+
+  const containerBg = isCompleted
+    ? isDark ? '#064E3B' : '#F0FDF4'
+    : isReviewLater
+    ? isDark ? '#451A03' : '#FFFBEB'
+    : theme.colors.cardBg;
+
+  const containerBorder = isCompleted
+    ? isDark ? '#059669' : '#BBF7D0'
+    : isReviewLater
+    ? isDark ? '#D97706' : '#FDE68A'
+    : theme.colors.cardBorder;
 
   return (
     <View
       style={[
         styles.container,
-        isCompleted && styles.completedContainer,
-        isReviewLater && styles.reviewContainer,
+        {
+          backgroundColor: containerBg,
+          borderColor: containerBorder,
+        },
       ]}
     >
       <View style={styles.contentCol}>
         <View style={styles.titleRow}>
-          <Text style={[styles.title, isCompleted && styles.completedTitle]}>
+          <Text
+            style={[
+              styles.title,
+              { color: theme.colors.onSurface },
+              isCompleted && {
+                color: isDark ? '#A7F3D0' : '#15803D',
+                textDecorationLine: 'line-through',
+              },
+            ]}
+          >
             {topic.title}
           </Text>
         </View>
 
         {topic.summary ? (
           <Text
-            style={[styles.summary, isCompleted && styles.completedSummary]}
+            style={[
+              styles.summary,
+              { color: theme.colors.onSurfaceVariant },
+              isCompleted && { color: isDark ? '#6EE7B7' : '#86EFAC' },
+            ]}
             numberOfLines={2}
           >
             {topic.summary}
@@ -38,20 +66,56 @@ export const TopicItem: React.FC<TopicItemProps> = ({ topic, onStatusChange }) =
         ) : null}
 
         <View style={styles.metaRow}>
-          <View style={styles.hourChip}>
-            <Ionicons name="time-outline" size={13} color="#64748B" />
-            <Text style={styles.hourText}>{topic.allocatedHours} hrs</Text>
+          <View
+            style={[
+              styles.hourChip,
+              { backgroundColor: theme.colors.surfaceContainerHigh },
+            ]}
+          >
+            <Ionicons name="time-outline" size={13} color={theme.colors.onSurfaceVariant} />
+            <Text
+              style={[
+                styles.hourText,
+                { color: theme.colors.onSurfaceVariant },
+              ]}
+            >
+              {topic.allocatedHours} hrs
+            </Text>
           </View>
 
           {isCompleted && (
-            <View style={styles.statusBadgeCompleted}>
-              <Text style={styles.statusBadgeTextCompleted}>Crushed It! ⚡️</Text>
+            <View
+              style={[
+                styles.statusBadgeCompleted,
+                { backgroundColor: isDark ? '#065F46' : '#DCFCE7' },
+              ]}
+            >
+              <Text
+                style={[
+                  styles.statusBadgeTextCompleted,
+                  { color: isDark ? '#A7F3D0' : '#15803D' },
+                ]}
+              >
+                Crushed It! ⚡️
+              </Text>
             </View>
           )}
 
           {isReviewLater && (
-            <View style={styles.statusBadgeReview}>
-              <Text style={styles.statusBadgeTextReview}>Saved for Review 🔖</Text>
+            <View
+              style={[
+                styles.statusBadgeReview,
+                { backgroundColor: isDark ? '#78350F' : '#FEF3C7' },
+              ]}
+            >
+              <Text
+                style={[
+                  styles.statusBadgeTextReview,
+                  { color: isDark ? '#FDE68A' : '#B45309' },
+                ]}
+              >
+                Saved for Review 🔖
+              </Text>
             </View>
           )}
         </View>
@@ -62,7 +126,15 @@ export const TopicItem: React.FC<TopicItemProps> = ({ topic, onStatusChange }) =
         <TouchableOpacity
           style={[
             styles.actionChip,
-            isCompleted ? styles.actionChipCompletedActive : styles.actionChipNeutral,
+            isCompleted
+              ? {
+                  backgroundColor: isDark ? '#065F46' : '#DCFCE7',
+                  borderColor: isDark ? '#34D399' : '#86EFAC',
+                }
+              : {
+                  backgroundColor: theme.colors.subtleBg,
+                  borderColor: theme.colors.cardBorder,
+                },
           ]}
           onPress={() => onStatusChange(isCompleted ? 'pending' : 'completed')}
           activeOpacity={0.8}
@@ -70,22 +142,39 @@ export const TopicItem: React.FC<TopicItemProps> = ({ topic, onStatusChange }) =
           <Ionicons
             name={isCompleted ? 'checkmark-circle' : 'checkmark-circle-outline'}
             size={16}
-            color={isCompleted ? '#065F46' : '#64748B'}
+            color={
+              isCompleted
+                ? isDark ? '#A7F3D0' : '#065F46'
+                : theme.colors.onSurfaceVariant
+            }
           />
           <Text
             style={[
               styles.actionChipText,
-              isCompleted && { color: '#065F46', fontWeight: '800' },
+              {
+                color: isCompleted
+                  ? isDark ? '#A7F3D0' : '#065F46'
+                  : theme.colors.onSurfaceVariant,
+                fontWeight: isCompleted ? '800' : '600',
+              },
             ]}
           >
-            {isCompleted ? 'Done' : 'Done'}
+            Done
           </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={[
             styles.actionChip,
-            isReviewLater ? styles.actionChipReviewActive : styles.actionChipNeutral,
+            isReviewLater
+              ? {
+                  backgroundColor: isDark ? '#78350F' : '#FEF3C7',
+                  borderColor: isDark ? '#FBBF24' : '#FCD34D',
+                }
+              : {
+                  backgroundColor: theme.colors.subtleBg,
+                  borderColor: theme.colors.cardBorder,
+                },
           ]}
           onPress={() => onStatusChange(isReviewLater ? 'pending' : 'review_later')}
           activeOpacity={0.8}
@@ -93,15 +182,24 @@ export const TopicItem: React.FC<TopicItemProps> = ({ topic, onStatusChange }) =
           <Ionicons
             name={isReviewLater ? 'bookmark' : 'bookmark-outline'}
             size={16}
-            color={isReviewLater ? '#92400E' : '#64748B'}
+            color={
+              isReviewLater
+                ? isDark ? '#FDE68A' : '#92400E'
+                : theme.colors.onSurfaceVariant
+            }
           />
           <Text
             style={[
               styles.actionChipText,
-              isReviewLater && { color: '#92400E', fontWeight: '800' },
+              {
+                color: isReviewLater
+                  ? isDark ? '#FDE68A' : '#92400E'
+                  : theme.colors.onSurfaceVariant,
+                fontWeight: isReviewLater ? '800' : '600',
+              },
             ]}
           >
-            {isReviewLater ? 'Saved' : 'Later'}
+            Later
           </Text>
         </TouchableOpacity>
       </View>
@@ -112,22 +210,11 @@ export const TopicItem: React.FC<TopicItemProps> = ({ topic, onStatusChange }) =
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    backgroundColor: '#FFFFFF',
     borderRadius: 18,
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-    ...M3.elevation.level1,
     alignItems: 'center',
-  },
-  completedContainer: {
-    backgroundColor: '#F0FDF4',
-    borderColor: '#BBF7D0',
-  },
-  reviewContainer: {
-    backgroundColor: '#FFFBEB',
-    borderColor: '#FDE68A',
   },
   contentCol: {
     flex: 1,
@@ -137,20 +224,12 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   title: {
-    ...M3.typography.titleMedium,
-    color: '#0F172A',
-  },
-  completedTitle: {
-    color: '#15803D',
-    textDecorationLine: 'line-through',
+    fontSize: 16,
+    fontWeight: '600',
   },
   summary: {
-    ...M3.typography.bodySmall,
-    color: '#64748B',
+    fontSize: 12,
     marginBottom: 8,
-  },
-  completedSummary: {
-    color: '#86EFAC',
   },
   metaRow: {
     flexDirection: 'row',
@@ -161,36 +240,31 @@ const styles = StyleSheet.create({
   hourChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F1F5F9',
     paddingHorizontal: 8,
     paddingVertical: 3,
-    borderRadius: M3.shapes.full,
+    borderRadius: 9999,
     gap: 4,
   },
   hourText: {
-    ...M3.typography.labelSmall,
-    color: '#64748B',
+    fontSize: 11,
+    fontWeight: '700',
   },
   statusBadgeCompleted: {
-    backgroundColor: '#DCFCE7',
     paddingHorizontal: 8,
     paddingVertical: 3,
-    borderRadius: M3.shapes.full,
+    borderRadius: 9999,
   },
   statusBadgeTextCompleted: {
-    ...M3.typography.labelSmall,
-    color: '#15803D',
+    fontSize: 11,
     fontWeight: '800',
   },
   statusBadgeReview: {
-    backgroundColor: '#FEF3C7',
     paddingHorizontal: 8,
     paddingVertical: 3,
-    borderRadius: M3.shapes.full,
+    borderRadius: 9999,
   },
   statusBadgeTextReview: {
-    ...M3.typography.labelSmall,
-    color: '#B45309',
+    fontSize: 11,
     fontWeight: '800',
   },
   actionsCol: {
@@ -203,28 +277,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: M3.shapes.full,
+    borderRadius: 9999,
     gap: 4,
     minWidth: 76,
     justifyContent: 'center',
-  },
-  actionChipNeutral: {
-    backgroundColor: '#F8FAFC',
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-  },
-  actionChipCompletedActive: {
-    backgroundColor: '#DCFCE7',
-    borderWidth: 1,
-    borderColor: '#86EFAC',
-  },
-  actionChipReviewActive: {
-    backgroundColor: '#FEF3C7',
-    borderWidth: 1,
-    borderColor: '#FCD34D',
   },
   actionChipText: {
-    ...M3.typography.labelSmall,
-    color: '#475569',
+    fontSize: 11,
   },
 });

@@ -18,9 +18,10 @@ import { loadPlans, deletePlan, getApiKey } from '../storage/planStorage';
 import { ChatPlannerScreen } from './ChatPlannerScreen';
 import { PlanDetailScreen } from './PlanDetailScreen';
 import { SettingsScreen } from './SettingsScreen';
-import { M3 } from '../theme/material3';
+import { useTheme } from '../theme/ThemeContext';
 
 export const HomeScreen: React.FC = () => {
+  const { isDark, toggleTheme, theme } = useTheme();
   const [plans, setPlans] = useState<StudyPlan[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -48,12 +49,12 @@ export const HomeScreen: React.FC = () => {
     };
 
     if (Platform.OS === 'web') {
-      if (window.confirm(`Delete study plan "${plan.title}"?`)) {
+      if (window.confirm(`Delete game plan "${plan.title}"?`)) {
         doDelete();
       }
     } else {
       Alert.alert(
-        'Delete Study Plan',
+        'Delete Game Plan',
         `Are you sure you want to delete "${plan.title}"?`,
         [
           { text: 'Cancel', style: 'cancel' },
@@ -65,7 +66,7 @@ export const HomeScreen: React.FC = () => {
 
   if (activeScreen === 'chat') {
     return (
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.colors.surface }]}>
         <ChatPlannerScreen
           onBack={() => setActiveScreen('home')}
           onPlanCreated={(newPlan) => {
@@ -80,7 +81,7 @@ export const HomeScreen: React.FC = () => {
 
   if (activeScreen === 'detail' && selectedPlan) {
     return (
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.colors.surface }]}>
         <PlanDetailScreen
           plan={selectedPlan}
           onBack={() => {
@@ -98,7 +99,7 @@ export const HomeScreen: React.FC = () => {
 
   if (activeScreen === 'settings') {
     return (
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.colors.surface }]}>
         <SettingsScreen
           currentApiKey={currentApiKey}
           onBack={() => setActiveScreen('home')}
@@ -111,39 +112,97 @@ export const HomeScreen: React.FC = () => {
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="dark-content" backgroundColor={M3.colors.surface} />
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.colors.surface }]}>
+      <StatusBar
+        barStyle={isDark ? 'light-content' : 'dark-content'}
+        backgroundColor={theme.colors.surface}
+      />
 
-      {/* Top App Bar in English */}
-      <View style={styles.topAppBar}>
+      {/* Top App Bar */}
+      <View
+        style={[
+          styles.topAppBar,
+          {
+            backgroundColor: theme.colors.cardBg,
+            borderBottomColor: theme.colors.cardBorder,
+          },
+        ]}
+      >
         <View style={styles.brandingBox}>
-          <View style={styles.logoPill}>
+          <View style={[styles.logoPill, { backgroundColor: theme.colors.primaryContainer }]}>
             <Text style={styles.logoEmoji}>⚡️</Text>
           </View>
           <View>
-            <Text style={styles.appTitle}>Chadavukondi Firstu!</Text>
-            <Text style={styles.appSubtitle}>Stop scrolling, start studying 📚</Text>
+            <Text style={[styles.appTitle, { color: theme.colors.onSurface }]}>
+              Chadavukondi Firstu!
+            </Text>
+            <Text style={[styles.appSubtitle, { color: theme.colors.onSurfaceVariant }]}>
+              Stop scrolling, lock in ⚡️
+            </Text>
           </View>
         </View>
 
-        <TouchableOpacity
-          style={styles.settingsIconButton}
-          onPress={() => setActiveScreen('settings')}
-          activeOpacity={0.7}
-        >
-          <Ionicons name="sparkles" size={18} color={M3.colors.primary} />
-        </TouchableOpacity>
+        <View style={styles.topRightActions}>
+          {/* Dark Mode Toggle */}
+          <TouchableOpacity
+            style={[
+              styles.actionIconButton,
+              { backgroundColor: theme.colors.surfaceContainerHigh },
+            ]}
+            onPress={toggleTheme}
+            activeOpacity={0.7}
+            accessibilityLabel="Toggle Dark Mode"
+          >
+            <Ionicons
+              name={isDark ? 'sunny' : 'moon'}
+              size={18}
+              color={isDark ? '#FBBF24' : theme.colors.primary}
+            />
+          </TouchableOpacity>
+
+          {/* Settings / Meme Vault */}
+          <TouchableOpacity
+            style={[
+              styles.actionIconButton,
+              { backgroundColor: theme.colors.primaryContainer },
+            ]}
+            onPress={() => setActiveScreen('settings')}
+            activeOpacity={0.7}
+            accessibilityLabel="Settings and Meme Vault"
+          >
+            <Ionicons name="sparkles" size={17} color={theme.colors.primary} />
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* Main Content Area */}
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.scrollContent}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refreshData} />}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={refreshData}
+            tintColor={theme.colors.primary}
+          />
+        }
       >
         {/* Gen-Z Hero Motivation Card */}
-        <View style={styles.heroBanner}>
-          <View style={styles.heroHeaderPill}>
+        <View
+          style={[
+            styles.heroBanner,
+            {
+              backgroundColor: isDark ? '#111827' : '#1E1B4B',
+              borderColor: isDark ? '#1F2937' : '#312E81',
+            },
+          ]}
+        >
+          <View
+            style={[
+              styles.heroHeaderPill,
+              { backgroundColor: isDark ? '#1F2937' : '#312E81' },
+            ]}
+          >
             <Text style={styles.heroHeaderPillText}>LOCKED IN MODE 🔥</Text>
           </View>
           <Text style={styles.heroTitle}>
@@ -155,12 +214,14 @@ export const HomeScreen: React.FC = () => {
 
           <View style={styles.heroFooterRow}>
             <TouchableOpacity
-              style={styles.heroActionButton}
+              style={[styles.heroActionButton, { backgroundColor: theme.colors.primary }]}
               onPress={() => setActiveScreen('chat')}
               activeOpacity={0.85}
             >
-              <Text style={styles.heroActionText}>Create Game Plan</Text>
-              <Ionicons name="arrow-forward" size={16} color="#FFFFFF" />
+              <Text style={[styles.heroActionText, { color: theme.colors.onPrimary }]}>
+                Create Game Plan
+              </Text>
+              <Ionicons name="arrow-forward" size={16} color={theme.colors.onPrimary} />
             </TouchableOpacity>
 
             <View style={styles.memeTag}>
@@ -172,39 +233,75 @@ export const HomeScreen: React.FC = () => {
         {/* Section Header */}
         <View style={styles.sectionHeader}>
           <View>
-            <Text style={styles.sectionTitle}>Active Game Plans</Text>
-            <Text style={styles.sectionCaption}>{plans.length} roadmaps in progress</Text>
+            <Text style={[styles.sectionTitle, { color: theme.colors.onSurface }]}>
+              Active Game Plans
+            </Text>
+            <Text style={[styles.sectionCaption, { color: theme.colors.onSurfaceVariant }]}>
+              {plans.length} roadmaps in progress
+            </Text>
           </View>
 
           {plans.length > 0 && (
             <TouchableOpacity
-              style={styles.newPlanChip}
+              style={[
+                styles.newPlanChip,
+                { backgroundColor: theme.colors.primaryContainer },
+              ]}
               onPress={() => setActiveScreen('chat')}
               activeOpacity={0.8}
             >
-              <Ionicons name="add" size={18} color={M3.colors.primary} />
-              <Text style={styles.newPlanChipText}>New Plan</Text>
+              <Ionicons name="add" size={18} color={theme.colors.primary} />
+              <Text
+                style={[
+                  styles.newPlanChipText,
+                  { color: theme.colors.onPrimaryContainer },
+                ]}
+              >
+                New Plan
+              </Text>
             </TouchableOpacity>
           )}
         </View>
 
         {/* Plan Cards or Empty State */}
         {plans.length === 0 ? (
-          <View style={styles.emptyContainer}>
-            <View style={styles.emptyIconCircle}>
-              <Ionicons name="rocket-outline" size={38} color={M3.colors.primary} />
+          <View
+            style={[
+              styles.emptyContainer,
+              {
+                backgroundColor: theme.colors.cardBg,
+                borderColor: theme.colors.cardBorder,
+              },
+            ]}
+          >
+            <View
+              style={[
+                styles.emptyIconCircle,
+                { backgroundColor: theme.colors.primaryContainer },
+              ]}
+            >
+              <Ionicons name="rocket-outline" size={38} color={theme.colors.primary} />
             </View>
-            <Text style={styles.emptyTitle}>Nothing Cooking Yet 🍳</Text>
-            <Text style={styles.emptyDescription}>
-              Tell the AI what you want to master (Python, Web Dev, UPSC, etc.) and it will craft an aesthetic, custom-paced study roadmap for you!
+            <Text style={[styles.emptyTitle, { color: theme.colors.onSurface }]}>
+              Nothing Cooking Yet 🍳
+            </Text>
+            <Text style={[styles.emptyDescription, { color: theme.colors.onSurfaceVariant }]}>
+              Tell the AI what you want to conquer (Python, Web Dev, UPSC, etc.) and it will craft an aesthetic, custom-paced roadmap for you!
             </Text>
             <TouchableOpacity
-              style={styles.emptyActionButton}
+              style={[
+                styles.emptyActionButton,
+                { backgroundColor: theme.colors.primary },
+              ]}
               onPress={() => setActiveScreen('chat')}
               activeOpacity={0.85}
             >
-              <Ionicons name="chatbubbles" size={18} color={M3.colors.onPrimary} />
-              <Text style={styles.emptyActionText}>Craft My First Plan ⚡️</Text>
+              <Ionicons name="chatbubbles" size={18} color={theme.colors.onPrimary} />
+              <Text
+                style={[styles.emptyActionText, { color: theme.colors.onPrimary }]}
+              >
+                Craft My First Plan ⚡️
+              </Text>
             </TouchableOpacity>
           </View>
         ) : (
@@ -222,13 +319,13 @@ export const HomeScreen: React.FC = () => {
         )}
       </ScrollView>
 
-      {/* Modern M3 Floating Action Button (FAB) */}
+      {/* Floating Action Button */}
       <TouchableOpacity
-        style={styles.m3Fab}
+        style={[styles.m3Fab, { backgroundColor: theme.colors.primary }]}
         activeOpacity={0.85}
         onPress={() => setActiveScreen('chat')}
       >
-        <Ionicons name="add" size={28} color="#FFFFFF" />
+        <Ionicons name="add" size={28} color={theme.colors.onPrimary} />
       </TouchableOpacity>
     </SafeAreaView>
   );
@@ -237,7 +334,6 @@ export const HomeScreen: React.FC = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: M3.colors.surface,
   },
   topAppBar: {
     flexDirection: 'row',
@@ -246,9 +342,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 14,
     paddingBottom: 14,
-    backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
-    borderBottomColor: M3.colors.outlineVariant,
   },
   brandingBox: {
     flexDirection: 'row',
@@ -259,7 +353,6 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 12,
-    backgroundColor: M3.colors.primaryContainer,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -267,20 +360,24 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   appTitle: {
-    ...M3.typography.titleLarge,
-    color: M3.colors.onSurface,
+    fontSize: 18,
     fontWeight: '800',
+    letterSpacing: -0.3,
   },
   appSubtitle: {
-    ...M3.typography.bodySmall,
-    color: M3.colors.onSurfaceVariant,
+    fontSize: 12,
     marginTop: 1,
+    fontWeight: '500',
   },
-  settingsIconButton: {
-    width: 40,
-    height: 40,
-    borderRadius: M3.shapes.full,
-    backgroundColor: M3.colors.primaryContainer,
+  topRightActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  actionIconButton: {
+    width: 38,
+    height: 38,
+    borderRadius: 9999,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -292,34 +389,33 @@ const styles = StyleSheet.create({
     paddingBottom: 100,
   },
   heroBanner: {
-    backgroundColor: '#1E1B4B', // Sleek deep midnight indigo
     borderRadius: 24,
     padding: 22,
     marginBottom: 26,
-    ...M3.elevation.level2,
+    borderWidth: 1,
   },
   heroHeaderPill: {
     alignSelf: 'flex-start',
-    backgroundColor: '#312E81',
     paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: M3.shapes.full,
+    borderRadius: 9999,
     marginBottom: 12,
   },
   heroHeaderPillText: {
-    ...M3.typography.labelSmall,
+    fontSize: 11,
     color: '#A5B4FC',
     fontWeight: '800',
+    letterSpacing: 0.5,
   },
   heroTitle: {
-    ...M3.typography.headlineSmall,
+    fontSize: 20,
     color: '#FFFFFF',
     fontWeight: '800',
     marginBottom: 8,
     lineHeight: 28,
   },
   heroSub: {
-    ...M3.typography.bodySmall,
+    fontSize: 13,
     color: '#C7D2FE',
     lineHeight: 20,
     marginBottom: 18,
@@ -334,22 +430,20 @@ const styles = StyleSheet.create({
   heroActionButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: M3.colors.primary,
     paddingHorizontal: 16,
     paddingVertical: 10,
-    borderRadius: M3.shapes.full,
+    borderRadius: 9999,
     gap: 8,
   },
   heroActionText: {
-    ...M3.typography.labelMedium,
-    color: '#FFFFFF',
+    fontSize: 13,
     fontWeight: '700',
   },
   memeTag: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'rgba(255, 255, 255, 0.12)',
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: M3.shapes.full,
+    borderRadius: 9999,
   },
   memeTagText: {
     fontSize: 11,
@@ -363,54 +457,46 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   sectionTitle: {
-    ...M3.typography.titleLarge,
-    color: M3.colors.onSurface,
+    fontSize: 18,
+    fontWeight: '700',
   },
   sectionCaption: {
-    ...M3.typography.bodySmall,
-    color: M3.colors.onSurfaceVariant,
+    fontSize: 12,
   },
   newPlanChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: M3.colors.primaryContainer,
     paddingHorizontal: 14,
     paddingVertical: 8,
-    borderRadius: M3.shapes.full,
+    borderRadius: 9999,
     gap: 6,
   },
   newPlanChipText: {
-    ...M3.typography.labelMedium,
-    color: M3.colors.onPrimaryContainer,
+    fontSize: 13,
     fontWeight: '700',
   },
   emptyContainer: {
-    backgroundColor: '#FFFFFF',
     borderRadius: 24,
     padding: 32,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: M3.colors.outlineVariant,
     marginTop: 10,
-    ...M3.elevation.level1,
   },
   emptyIconCircle: {
     width: 76,
     height: 76,
-    borderRadius: M3.shapes.full,
-    backgroundColor: M3.colors.primaryContainer,
+    borderRadius: 9999,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 16,
   },
   emptyTitle: {
-    ...M3.typography.titleLarge,
-    color: M3.colors.onSurface,
+    fontSize: 18,
+    fontWeight: '700',
     marginBottom: 8,
   },
   emptyDescription: {
-    ...M3.typography.bodyMedium,
-    color: M3.colors.onSurfaceVariant,
+    fontSize: 14,
     textAlign: 'center',
     marginBottom: 24,
     lineHeight: 22,
@@ -418,16 +504,13 @@ const styles = StyleSheet.create({
   emptyActionButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: M3.colors.primary,
     paddingHorizontal: 24,
     paddingVertical: 13,
-    borderRadius: M3.shapes.full,
+    borderRadius: 9999,
     gap: 8,
-    ...M3.elevation.level2,
   },
   emptyActionText: {
-    ...M3.typography.labelLarge,
-    color: '#FFFFFF',
+    fontSize: 14,
     fontWeight: '700',
   },
   m3Fab: {
@@ -437,9 +520,12 @@ const styles = StyleSheet.create({
     width: 58,
     height: 58,
     borderRadius: 18,
-    backgroundColor: M3.colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
-    ...M3.elevation.level3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 6,
   },
 });
