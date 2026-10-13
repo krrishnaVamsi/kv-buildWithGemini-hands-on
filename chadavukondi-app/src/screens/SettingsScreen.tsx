@@ -12,6 +12,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { setApiKey } from '../storage/planStorage';
 import { MEME_BADGES_CATALOG, MEME_REFERENCES } from '../data/memeCatalog';
+import { M3 } from '../theme/material3';
 
 interface SettingsScreenProps {
   currentApiKey: string;
@@ -42,10 +43,10 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
 
   return (
     <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backBtn} onPress={onBack}>
-          <Ionicons name="arrow-back" size={24} color="#0F172A" />
+      {/* M3 Top App Bar */}
+      <View style={styles.topAppBar}>
+        <TouchableOpacity style={styles.iconButton} onPress={onBack} activeOpacity={0.7}>
+          <Ionicons name="arrow-back" size={24} color={M3.colors.onSurface} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Settings & Meme Catalog</Text>
       </View>
@@ -54,8 +55,13 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
         {/* Gemini API Key Box */}
         <View style={styles.card}>
           <View style={styles.cardHeader}>
-            <Ionicons name="key-outline" size={20} color="#4F46E5" />
-            <Text style={styles.cardTitle}>Gemini AI Configuration</Text>
+            <View style={styles.cardIconBox}>
+              <Ionicons name="key-outline" size={20} color={M3.colors.primary} />
+            </View>
+            <View>
+              <Text style={styles.cardTitle}>Gemini AI Configuration</Text>
+              <Text style={styles.cardSubtitle}>Local device storage only</Text>
+            </View>
           </View>
           <Text style={styles.cardDesc}>
             Your API key is stored strictly on your local device storage. It is never uploaded to any backend or git repository.
@@ -64,14 +70,14 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
           <TextInput
             style={styles.keyInput}
             placeholder="AIzaSy..."
-            placeholderTextColor="#94A3B8"
+            placeholderTextColor={M3.colors.outline}
             secureTextEntry
             value={apiKeyInput}
             onChangeText={setApiKeyInput}
           />
 
-          <TouchableOpacity style={styles.saveBtn} onPress={handleSaveKey}>
-            <Ionicons name="save-outline" size={16} color="#FFFFFF" />
+          <TouchableOpacity style={styles.saveBtn} onPress={handleSaveKey} activeOpacity={0.85}>
+            <Ionicons name="save-outline" size={16} color={M3.colors.onPrimary} />
             <Text style={styles.saveBtnText}>{isSaved ? 'Saved Locally! ✅' : 'Save Key'}</Text>
           </TouchableOpacity>
         </View>
@@ -79,8 +85,13 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
         {/* Meme Badges Showcase */}
         <View style={styles.card}>
           <View style={styles.cardHeader}>
-            <Ionicons name="trophy-outline" size={20} color="#D97706" />
-            <Text style={styles.cardTitle}>Milestone Badges Catalog</Text>
+            <View style={[styles.cardIconBox, { backgroundColor: M3.colors.warningContainer }]}>
+              <Ionicons name="trophy-outline" size={20} color={M3.colors.warning} />
+            </View>
+            <View>
+              <Text style={styles.cardTitle}>Milestone Badges Catalog</Text>
+              <Text style={styles.cardSubtitle}>Meme reward achievements</Text>
+            </View>
           </View>
           <Text style={styles.cardDesc}>
             Badges awarded when you hit consecutive study weeks & months!
@@ -88,7 +99,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
 
           {MEME_BADGES_CATALOG.map((b) => (
             <View key={b.id} style={styles.badgeItem}>
-              <View style={[styles.badgeIconBox, { backgroundColor: b.color + '20' }]}>
+              <View style={[styles.badgeIconBox, { backgroundColor: b.color + '22' }]}>
                 <Ionicons name={b.iconName as any} size={22} color={b.color} />
               </View>
               <View style={styles.badgeInfo}>
@@ -100,11 +111,16 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
           ))}
         </View>
 
-        {/* Telugu Meme Dialogue References */}
+        {/* Telugu Meme Dialogue Vault */}
         <View style={styles.card}>
           <View style={styles.cardHeader}>
-            <Ionicons name="chatbubbles-outline" size={20} color="#059669" />
-            <Text style={styles.cardTitle}>Telugu Meme Audio & Text Vault</Text>
+            <View style={[styles.cardIconBox, { backgroundColor: M3.colors.tertiaryContainer }]}>
+              <Ionicons name="chatbubbles-outline" size={20} color={M3.colors.tertiary} />
+            </View>
+            <View>
+              <Text style={styles.cardTitle}>Telugu Meme Dialogue Vault</Text>
+              <Text style={styles.cardSubtitle}>Motivation & comedy references</Text>
+            </View>
           </View>
           {MEME_REFERENCES.map((m) => (
             <View key={m.id} style={styles.memeRefRow}>
@@ -122,26 +138,30 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: M3.colors.surface,
   },
-  header: {
+  topAppBar: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
-    paddingTop: 14,
-    paddingBottom: 14,
-    backgroundColor: '#FFFFFF',
+    paddingTop: 12,
+    paddingBottom: 12,
+    backgroundColor: M3.colors.surface,
     borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0',
+    borderBottomColor: M3.colors.outlineVariant,
     gap: 12,
   },
-  backBtn: {
-    padding: 4,
+  iconButton: {
+    width: 40,
+    height: 40,
+    borderRadius: M3.shapes.full,
+    backgroundColor: M3.colors.surfaceContainerHigh,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   headerTitle: {
-    fontSize: 17,
-    fontWeight: '700',
-    color: '#0F172A',
+    ...M3.typography.titleLarge,
+    color: M3.colors.onSurface,
   },
   content: {
     flex: 1,
@@ -149,68 +169,81 @@ const styles = StyleSheet.create({
   scrollContent: {
     padding: 16,
     gap: 16,
+    paddingBottom: 40,
   },
   card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 16,
+    backgroundColor: M3.colors.surfaceContainerLow,
+    borderRadius: M3.shapes.extraLarge,
+    padding: 20,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: M3.colors.outlineVariant,
+    ...M3.elevation.level1,
   },
   cardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    marginBottom: 6,
+    gap: 12,
+    marginBottom: 8,
+  },
+  cardIconBox: {
+    width: 40,
+    height: 40,
+    borderRadius: M3.shapes.full,
+    backgroundColor: M3.colors.primaryContainer,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   cardTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#0F172A',
+    ...M3.typography.titleMedium,
+    color: M3.colors.onSurface,
+  },
+  cardSubtitle: {
+    ...M3.typography.labelSmall,
+    color: M3.colors.onSurfaceVariant,
   },
   cardDesc: {
-    fontSize: 13,
-    color: '#64748B',
+    ...M3.typography.bodySmall,
+    color: M3.colors.onSurfaceVariant,
     lineHeight: 18,
-    marginBottom: 12,
+    marginBottom: 14,
   },
   keyInput: {
-    backgroundColor: '#F8FAFC',
+    backgroundColor: M3.colors.surfaceContainerLowest,
     borderWidth: 1,
-    borderColor: '#CBD5E1',
-    borderRadius: 10,
-    paddingHorizontal: 12,
+    borderColor: M3.colors.outlineVariant,
+    borderRadius: M3.shapes.medium,
+    paddingHorizontal: 14,
     paddingVertical: 10,
     fontSize: 14,
-    color: '#0F172A',
-    marginBottom: 12,
+    color: M3.colors.onSurface,
+    marginBottom: 14,
   },
   saveBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#4F46E5',
-    paddingVertical: 10,
-    borderRadius: 8,
-    gap: 6,
+    backgroundColor: M3.colors.primary,
+    paddingVertical: 12,
+    borderRadius: M3.shapes.full,
+    gap: 8,
+    ...M3.elevation.level1,
   },
   saveBtnText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '700',
+    ...M3.typography.labelLarge,
+    color: M3.colors.onPrimary,
   },
   badgeItem: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#F1F5F9',
+    borderBottomColor: M3.colors.surfaceContainerHigh,
     gap: 12,
   },
   badgeIconBox: {
     width: 44,
     height: 44,
-    borderRadius: 22,
+    borderRadius: M3.shapes.full,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -218,43 +251,43 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   badgeTelugu: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#1E293B',
+    ...M3.typography.titleSmall,
+    color: M3.colors.onSurface,
   },
   badgeEng: {
-    fontSize: 12,
-    color: '#475569',
+    ...M3.typography.bodySmall,
+    color: M3.colors.onSurfaceVariant,
     marginTop: 1,
   },
   badgeQuote: {
     fontSize: 11,
     fontStyle: 'italic',
-    color: '#64748B',
+    color: M3.colors.tertiary,
     marginTop: 2,
   },
   memeRefRow: {
-    backgroundColor: '#F8FAFC',
-    borderRadius: 10,
-    padding: 12,
+    backgroundColor: M3.colors.surfaceContainerLowest,
+    borderRadius: M3.shapes.large,
+    padding: 14,
     marginBottom: 10,
-    borderLeftWidth: 3,
-    borderLeftColor: '#059669',
+    borderLeftWidth: 4,
+    borderLeftColor: M3.colors.tertiary,
+    borderWidth: 1,
+    borderColor: M3.colors.outlineVariant,
   },
   memeQuoteLarge: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#0F172A',
+    ...M3.typography.titleSmall,
+    color: M3.colors.onSurface,
     marginBottom: 4,
   },
   memeMeaning: {
-    fontSize: 12,
-    color: '#334155',
+    ...M3.typography.bodySmall,
+    color: M3.colors.onSurfaceVariant,
     marginBottom: 2,
   },
   memeChar: {
     fontSize: 11,
-    color: '#64748B',
+    color: M3.colors.secondary,
     fontStyle: 'italic',
   },
 });

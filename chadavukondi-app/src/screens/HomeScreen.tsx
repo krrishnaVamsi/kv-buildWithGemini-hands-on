@@ -18,6 +18,7 @@ import { loadPlans, deletePlan, getApiKey } from '../storage/planStorage';
 import { ChatPlannerScreen } from './ChatPlannerScreen';
 import { PlanDetailScreen } from './PlanDetailScreen';
 import { SettingsScreen } from './SettingsScreen';
+import { M3 } from '../theme/material3';
 
 export const HomeScreen: React.FC = () => {
   const [plans, setPlans] = useState<StudyPlan[]>([]);
@@ -111,64 +112,75 @@ export const HomeScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+      <StatusBar barStyle="dark-content" backgroundColor={M3.colors.surface} />
 
-      {/* App Header */}
-      <View style={styles.header}>
+      {/* M3 Top App Bar */}
+      <View style={styles.topAppBar}>
         <View>
-          <Text style={styles.logoTitle}>చదువుకోండి ఫస్టు</Text>
-          <Text style={styles.logoSubtitle}>Chadavukondi Firstu • Study Planner</Text>
+          <Text style={styles.appTitle}>చదువుకోండి ఫస్టు</Text>
+          <Text style={styles.appSubtitle}>Chadavukondi Firstu • M3 Study Planner</Text>
         </View>
+
         <TouchableOpacity
-          style={styles.settingsIconBtn}
+          style={styles.settingsIconButton}
           onPress={() => setActiveScreen('settings')}
+          activeOpacity={0.7}
         >
-          <Ionicons name="settings-outline" size={22} color="#334155" />
+          <Ionicons name="settings-outline" size={22} color={M3.colors.onSurfaceVariant} />
         </TouchableOpacity>
       </View>
 
-      {/* Main Content */}
+      {/* Main Content Area */}
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.scrollContent}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refreshData} />}
       >
-        {/* Banner with meme spirit */}
-        <View style={styles.banner}>
-          <View style={styles.bannerContent}>
-            <Text style={styles.bannerMemeQuote}>“ఇంకా మాట్లాడకండి... చదువుకోండి ఫస్టు!”</Text>
-            <Text style={styles.bannerMemeSub}>
-              Select your plan, conquer today’s topics, and claim your weekly streak badges!
+        {/* M3 Hero Motivation Tonal Banner */}
+        <View style={styles.heroBanner}>
+          <View style={styles.heroContent}>
+            <Text style={styles.heroTeluguQuote}>“ఇంకా మాట్లాడకండి... చదువుకోండి ఫస్టు!”</Text>
+            <Text style={styles.heroEnglishSub}>
+              Build consistent habits, conquer your daily syllabus, and unlock Telugu meme badges!
             </Text>
           </View>
-          <View style={styles.bannerIconBox}>
-            <Ionicons name="school" size={28} color="#4F46E5" />
+          <View style={styles.heroIconBox}>
+            <Ionicons name="school" size={26} color={M3.colors.primary} />
           </View>
         </View>
 
-        {/* Section Heading */}
-        <View style={styles.sectionRow}>
+        {/* Section Header */}
+        <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Your Study Plans ({plans.length})</Text>
           {plans.length > 0 && (
-            <TouchableOpacity onPress={() => setActiveScreen('chat')}>
-              <Text style={styles.addPlanLink}>+ New Plan</Text>
+            <TouchableOpacity
+              style={styles.newPlanChip}
+              onPress={() => setActiveScreen('chat')}
+              activeOpacity={0.8}
+            >
+              <Ionicons name="add" size={16} color={M3.colors.primary} />
+              <Text style={styles.newPlanChipText}>New Plan</Text>
             </TouchableOpacity>
           )}
         </View>
 
-        {/* Plan Cards */}
+        {/* Plan Cards or Empty State */}
         {plans.length === 0 ? (
-          <View style={styles.emptyState}>
+          <View style={styles.emptyContainer}>
             <View style={styles.emptyIconCircle}>
-              <Ionicons name="book-outline" size={38} color="#4F46E5" />
+              <Ionicons name="book-outline" size={36} color={M3.colors.primary} />
             </View>
-            <Text style={styles.emptyTitle}>No study plans yet!</Text>
-            <Text style={styles.emptyDesc}>
-              Tap the button below to start a quick chat with the planner bot and generate your topic-wise calendar!
+            <Text style={styles.emptyTitle}>No study plans yet</Text>
+            <Text style={styles.emptyDescription}>
+              Chat with our AI bot to generate a structured, topic-wise study roadmap tailored to your timeline.
             </Text>
-            <TouchableOpacity style={styles.createFirstBtn} onPress={() => setActiveScreen('chat')}>
-              <Ionicons name="chatbubbles" size={18} color="#FFFFFF" />
-              <Text style={styles.createFirstBtnText}>Create My First Plan</Text>
+            <TouchableOpacity
+              style={styles.emptyActionButton}
+              onPress={() => setActiveScreen('chat')}
+              activeOpacity={0.85}
+            >
+              <Ionicons name="chatbubbles" size={18} color={M3.colors.onPrimary} />
+              <Text style={styles.emptyActionText}>Start Planner Chat</Text>
             </TouchableOpacity>
           </View>
         ) : (
@@ -186,13 +198,13 @@ export const HomeScreen: React.FC = () => {
         )}
       </ScrollView>
 
-      {/* Floating Action Button (FAB) */}
+      {/* M3 Floating Action Button (FAB) */}
       <TouchableOpacity
-        style={styles.fab}
+        style={styles.m3Fab}
         activeOpacity={0.85}
         onPress={() => setActiveScreen('chat')}
       >
-        <Ionicons name="add" size={30} color="#FFFFFF" />
+        <Ionicons name="add" size={28} color={M3.colors.onPrimaryContainer} />
       </TouchableOpacity>
     </SafeAreaView>
   );
@@ -201,152 +213,153 @@ export const HomeScreen: React.FC = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: M3.colors.surface,
   },
-  header: {
+  topAppBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingVertical: 14,
-    backgroundColor: '#FFFFFF',
+    paddingTop: 12,
+    paddingBottom: 12,
+    backgroundColor: M3.colors.surface,
     borderBottomWidth: 1,
-    borderBottomColor: '#F1F5F9',
+    borderBottomColor: M3.colors.outlineVariant,
   },
-  logoTitle: {
-    fontSize: 20,
-    fontWeight: '800',
-    color: '#0F172A',
+  appTitle: {
+    ...M3.typography.headlineSmall,
+    color: M3.colors.onSurface,
   },
-  logoSubtitle: {
-    fontSize: 12,
-    color: '#64748B',
-    marginTop: 1,
+  appSubtitle: {
+    ...M3.typography.labelSmall,
+    color: M3.colors.onSurfaceVariant,
+    marginTop: 2,
   },
-  settingsIconBtn: {
-    padding: 6,
-    borderRadius: 8,
-    backgroundColor: '#F8FAFC',
+  settingsIconButton: {
+    width: 40,
+    height: 40,
+    borderRadius: M3.shapes.full,
+    backgroundColor: M3.colors.surfaceContainerHigh,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   container: {
     flex: 1,
   },
   scrollContent: {
     padding: 20,
-    paddingBottom: 90,
+    paddingBottom: 100,
   },
-  banner: {
-    backgroundColor: '#EEF2FF',
-    borderRadius: 16,
-    padding: 16,
+  heroBanner: {
+    backgroundColor: M3.colors.primaryContainer,
+    borderRadius: M3.shapes.extraLarge,
+    padding: 20,
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: '#E0E7FF',
-    gap: 12,
+    marginBottom: 24,
+    gap: 16,
+    ...M3.elevation.level1,
   },
-  bannerContent: {
+  heroContent: {
     flex: 1,
   },
-  bannerMemeQuote: {
-    fontSize: 14,
+  heroTeluguQuote: {
+    ...M3.typography.titleMedium,
+    color: M3.colors.onPrimaryContainer,
     fontWeight: '800',
-    color: '#3730A3',
-    marginBottom: 4,
+    marginBottom: 6,
   },
-  bannerMemeSub: {
-    fontSize: 12,
-    color: '#4F46E5',
-    lineHeight: 16,
+  heroEnglishSub: {
+    ...M3.typography.bodySmall,
+    color: M3.colors.onPrimaryContainer,
+    opacity: 0.85,
+    lineHeight: 18,
   },
-  bannerIconBox: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: '#FFFFFF',
+  heroIconBox: {
+    width: 50,
+    height: 50,
+    borderRadius: M3.shapes.large,
+    backgroundColor: M3.colors.surfaceContainerLowest,
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 2,
-    shadowColor: '#4F46E5',
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
+    ...M3.elevation.level1,
   },
-  sectionRow: {
+  sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 14,
+    marginBottom: 16,
   },
   sectionTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#1E293B',
+    ...M3.typography.titleLarge,
+    color: M3.colors.onSurface,
   },
-  addPlanLink: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#4F46E5',
+  newPlanChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: M3.colors.surfaceContainerHigh,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: M3.shapes.full,
+    gap: 4,
   },
-  emptyState: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 28,
+  newPlanChipText: {
+    ...M3.typography.labelMedium,
+    color: M3.colors.primary,
+  },
+  emptyContainer: {
+    backgroundColor: M3.colors.surfaceContainerLow,
+    borderRadius: M3.shapes.extraLarge,
+    padding: 32,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: M3.colors.outlineVariant,
     marginTop: 10,
   },
   emptyIconCircle: {
     width: 72,
     height: 72,
-    borderRadius: 36,
-    backgroundColor: '#EEF2FF',
+    borderRadius: M3.shapes.full,
+    backgroundColor: M3.colors.primaryContainer,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 16,
   },
   emptyTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#0F172A',
+    ...M3.typography.titleLarge,
+    color: M3.colors.onSurface,
     marginBottom: 8,
   },
-  emptyDesc: {
-    fontSize: 13,
-    color: '#64748B',
+  emptyDescription: {
+    ...M3.typography.bodyMedium,
+    color: M3.colors.onSurfaceVariant,
     textAlign: 'center',
-    lineHeight: 19,
-    marginBottom: 20,
+    marginBottom: 24,
   },
-  createFirstBtn: {
+  emptyActionButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#4F46E5',
-    paddingHorizontal: 20,
+    backgroundColor: M3.colors.primary,
+    paddingHorizontal: 24,
     paddingVertical: 12,
-    borderRadius: 10,
+    borderRadius: M3.shapes.full,
     gap: 8,
+    ...M3.elevation.level1,
   },
-  createFirstBtnText: {
-    color: '#FFFFFF',
-    fontWeight: '700',
-    fontSize: 14,
+  emptyActionText: {
+    ...M3.typography.labelLarge,
+    color: M3.colors.onPrimary,
   },
-  fab: {
+  m3Fab: {
     position: 'absolute',
     right: 20,
     bottom: 24,
-    width: 58,
-    height: 58,
-    borderRadius: 29,
-    backgroundColor: '#4F46E5',
+    width: 56,
+    height: 56,
+    borderRadius: M3.shapes.large, // Official M3 rounded-square shape
+    backgroundColor: M3.colors.primaryContainer,
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 6,
-    shadowColor: '#4F46E5',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.35,
-    shadowRadius: 8,
+    ...M3.elevation.level3,
   },
 });

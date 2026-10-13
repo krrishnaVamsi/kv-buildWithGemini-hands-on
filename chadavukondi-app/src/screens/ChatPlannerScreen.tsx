@@ -14,6 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { generateStudyPlanWithGemini } from '../api/gemini';
 import { savePlan } from '../storage/planStorage';
 import { StudyPlan } from '../types';
+import { M3 } from '../theme/material3';
 
 interface Message {
   id: string;
@@ -50,8 +51,8 @@ export const ChatPlannerScreen: React.FC<ChatPlannerScreenProps> = ({
   const [targetMonths, setTargetMonths] = useState(2);
   const [loading, setLoading] = useState(false);
 
-  const handleSend = async () => {
-    const text = inputVal.trim();
+  const handleSend = async (overrideText?: string) => {
+    const text = (overrideText || inputVal).trim();
     if (!text) return;
 
     const userMsg: Message = {
@@ -61,332 +62,414 @@ export const ChatPlannerScreen: React.FC<ChatPlannerScreenProps> = ({
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     };
 
-    setMessages((prev) => [...prev, userMsg]);
+    const nextMessages = [...messages, userMsg];
+    setMessages(nextMessages);
     setInputVal('');
 
     if (currentStep === 'ask_subject') {
       setSubject(text);
       setCurrentStep('ask_days');
-      setTimeout(() => {
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: `msg-ai-${Date.now()}`,
-            sender: 'ai',
-            text: `Super! "${text}" is an awesome goal. 🚀\n\nHow many days per week can you allocate for studying? (e.g. 4, 5, 6, 7 days)`,
-            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          },
-        ]);
-      }, 500);
+      setMessages([
+        ...nextMessages,
+        {
+          id: `msg-${Date.now() + 1}`,
+          sender: 'ai',
+          text: `Awesome! "${text}" is a great goal. 🗓️\n\nHow many days per week can you allocate for focused study? (e.g., 3 to 7 days)`,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        },
+      ]);
     } else if (currentStep === 'ask_days') {
-      const days = parseInt(text.replace(/[^0-9]/g, '')) || 5;
-      const clampedDays = Math.max(1, Math.min(7, days));
-      setDaysPerWeek(clampedDays);
+      const parsedDays = parseInt(text.replace(/[^0-9]/g, ''), 10) || 5;
+      const validDays = Math.min(Math.max(parsedDays, 1), 7);
+      setDaysPerWeek(validDays);
       setCurrentStep('ask_hours');
-      setTimeout(() => {
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: `msg-ai-${Date.now()}`,
-            sender: 'ai',
-            text: `Got it! ${clampedDays} days a week. ⏰\n\nHow many hours per day can you study focused without checking reels or Instagram? (e.g. 2, 3, 4, 6 hours)`,
-            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          },
-        ]);
-      }, 500);
+      setMessages([
+        ...nextMessages,
+        {
+          id: `msg-${Date.now() + 1}`,
+          sender: 'ai',
+          text: `Got it: ${validDays} days per week. ⏰\n\nHow many hours can you dedicate each study day? (e.g., 1 to 8 hours)`,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        },
+      ]);
     } else if (currentStep === 'ask_hours') {
-      const hours = parseInt(text.replace(/[^0-9]/g, '')) || 3;
-      const clampedHours = Math.max(1, Math.min(16, hours));
-      setHoursPerDay(clampedHours);
+      const parsedHours = parseInt(text.replace(/[^0-9]/g, ''), 10) || 3;
+      const validHours = Math.min(Math.max(parsedHours, 1), 12);
+      setHoursPerDay(validHours);
       setCurrentStep('ask_months');
-      setTimeout(() => {
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: `msg-ai-${Date.now()}`,
-            sender: 'ai',
-            text: `Perfect dedication: ${clampedHours} hours/day! 🎯\n\nFinally, how many months is your target timeline to achieve complete mastery? (e.g. 1, 2, 3, 6 months)`,
-            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          },
-        ]);
-      }, 500);
+      setMessages([
+        ...nextMessages,
+        {
+          id: `msg-${Date.now() + 1}`,
+          sender: 'ai',
+          text: `Perfect: ${validHours} hours per day. 🎯\n\nIn how many months do you aim to master this topic? (e.g., 1, 2, or 3 months)`,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        },
+      ]);
     } else if (currentStep === 'ask_months') {
-      const months = parseInt(text.replace(/[^0-9]/g, '')) || 2;
-      const clampedMonths = Math.max(1, Math.min(12, months));
-      setTargetMonths(clampedMonths);
+      const parsedMonths = parseInt(text.replace(/[^0-9]/g, ''), 10) || 2;
+      const validMonths = Math.min(Math.max(parsedMonths, 1), 12);
+      setTargetMonths(validMonths);
       setCurrentStep('generating');
       setLoading(true);
 
       const generatingMsg: Message = {
-        id: `msg-ai-gen-${Date.now()}`,
+        id: `msg-${Date.now() + 1}`,
         sender: 'ai',
-        text: `Creating your custom calendar for "${subject}" (${clampedMonths} months, ${daysPerWeek} days/wk, ${hoursPerDay} hrs/day)... "Chadavukondi Firstu!" 🧠⚡`,
+        text: `“ఇంకా మాట్లాడకండి, చదువుకోండి ఫస్టు!” 🚀\n\nCreating your personalized study calendar for "${subject}" (${validMonths} months, ${daysPerWeek} days/wk, ${hoursPerDay} hrs/day)...`,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };
-      setMessages((prev) => [...prev, generatingMsg]);
+      setMessages([...nextMessages, generatingMsg]);
 
       try {
-        const plan = await generateStudyPlanWithGemini({
+        const newPlan = await generateStudyPlanWithGemini({
           subject,
           daysPerWeek,
           hoursPerDay,
-          targetMonths: clampedMonths,
+          targetMonths: validMonths,
         });
 
-        await savePlan(plan);
+        await savePlan(newPlan);
         setLoading(false);
         setCurrentStep('done');
 
-        setMessages((prev) => [
-          ...prev,
+        onPlanCreated(newPlan);
+      } catch (err: any) {
+        setLoading(false);
+        setMessages([
+          ...nextMessages,
+          generatingMsg,
           {
-            id: `msg-ai-done-${Date.now()}`,
+            id: `msg-${Date.now() + 2}`,
             sender: 'ai',
-            text: `🎉 Your personalized schedule for "${subject}" is ready with ${plan.weeks.length} weeks and ${plan.weeks.reduce((acc, w) => acc + w.days.reduce((da, d) => da + d.topics.length, 0), 0)} scheduled topics!`,
+            text: `Error generating plan: ${err.message || 'Unknown error'}. Please try again.`,
             timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           },
         ]);
-
-        setTimeout(() => {
-          onPlanCreated(plan);
-        }, 1200);
-      } catch (err) {
-        setLoading(false);
-        console.error('Plan generation failed:', err);
+        setCurrentStep('ask_months');
       }
     }
   };
 
   return (
     <KeyboardAvoidingView
+      style={styles.keyboardContainer}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      style={styles.container}
     >
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backBtn} onPress={onBack}>
-          <Ionicons name="arrow-back" size={24} color="#0F172A" />
-        </TouchableOpacity>
-        <View style={styles.headerInfo}>
-          <Text style={styles.headerTitle}>Study Planner Assistant</Text>
-          <Text style={styles.headerSubtitle}>చదువుకోండి ఫస్టు Bot • AI Ready</Text>
+      <View style={styles.container}>
+        {/* M3 Top App Bar */}
+        <View style={styles.topAppBar}>
+          <TouchableOpacity style={styles.iconButton} onPress={onBack} activeOpacity={0.7}>
+            <Ionicons name="arrow-back" size={24} color={M3.colors.onSurface} />
+          </TouchableOpacity>
+          <View style={styles.headerInfo}>
+            <Text style={styles.headerTitle}>AI Study Planner</Text>
+            <Text style={styles.headerSubtitle}>Material You Assistant</Text>
+          </View>
         </View>
-      </View>
 
-      {/* Messages */}
-      <ScrollView style={styles.messagesScroll} contentContainerStyle={styles.messagesContent}>
-        {messages.map((m) => (
-          <View
-            key={m.id}
-            style={[styles.bubbleWrapper, m.sender === 'user' ? styles.userWrapper : styles.aiWrapper]}
-          >
-            {m.sender === 'ai' && (
-              <View style={styles.avatar}>
-                <Ionicons name="sparkles" size={16} color="#FFFFFF" />
-              </View>
-            )}
+        {/* Chat Messages */}
+        <ScrollView
+          style={styles.messagesScroll}
+          contentContainerStyle={styles.messagesContent}
+          keyboardShouldPersistTaps="handled"
+        >
+          {messages.map((m) => (
             <View
+              key={m.id}
               style={[
-                styles.bubble,
-                m.sender === 'user' ? styles.userBubble : styles.aiBubble,
+                styles.messageRow,
+                m.sender === 'user' ? styles.userRow : styles.aiRow,
               ]}
             >
-              <Text
+              {m.sender === 'ai' && (
+                <View style={styles.avatarCircle}>
+                  <Ionicons name="school" size={16} color={M3.colors.primary} />
+                </View>
+              )}
+              <View
                 style={[
-                  styles.bubbleText,
-                  m.sender === 'user' ? styles.userBubbleText : styles.aiBubbleText,
+                  styles.bubble,
+                  m.sender === 'user' ? styles.userBubble : styles.aiBubble,
                 ]}
               >
-                {m.text}
-              </Text>
-              <Text
-                style={[
-                  styles.timestampText,
-                  m.sender === 'user' ? styles.userTimestamp : styles.aiTimestamp,
-                ]}
-              >
-                {m.timestamp}
-              </Text>
+                <Text
+                  style={[
+                    styles.bubbleText,
+                    m.sender === 'user' ? styles.userText : styles.aiText,
+                  ]}
+                >
+                  {m.text}
+                </Text>
+                <Text
+                  style={[
+                    styles.timestamp,
+                    m.sender === 'user' ? styles.userTimestamp : styles.aiTimestamp,
+                  ]}
+                >
+                  {m.timestamp}
+                </Text>
+              </View>
             </View>
-          </View>
-        ))}
+          ))}
 
-        {loading && (
-          <View style={styles.loadingBox}>
-            <ActivityIndicator size="small" color="#4F46E5" />
-            <Text style={styles.loadingText}>Crafting syllabus & allocating hours...</Text>
+          {loading && (
+            <View style={styles.loadingCard}>
+              <ActivityIndicator size="small" color={M3.colors.primary} />
+              <Text style={styles.loadingText}>Synthesizing syllabus roadmap...</Text>
+            </View>
+          )}
+        </ScrollView>
+
+        {/* M3 Quick Suggestion Chips */}
+        {currentStep === 'ask_days' && (
+          <View style={styles.chipsRow}>
+            {['3 Days', '4 Days', '5 Days', '6 Days', '7 Days'].map((d) => (
+              <TouchableOpacity
+                key={d}
+                style={styles.suggestionChip}
+                onPress={() => handleSend(d)}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.suggestionChipText}>{d}</Text>
+              </TouchableOpacity>
+            ))}
           </View>
         )}
-      </ScrollView>
 
-      {/* Input bar */}
-      <View style={styles.inputBar}>
-        <TextInput
-          style={styles.input}
-          placeholder={
-            currentStep === 'ask_subject'
-              ? 'e.g. Full Stack Web Development, UPSC, Python'
-              : currentStep === 'ask_days'
-              ? 'e.g. 5 days per week'
-              : currentStep === 'ask_hours'
-              ? 'e.g. 3 hours per day'
-              : currentStep === 'ask_months'
-              ? 'e.g. 2 months'
-              : 'Type your message...'
-          }
-          placeholderTextColor="#94A3B8"
-          value={inputVal}
-          onChangeText={setInputVal}
-          onSubmitEditing={handleSend}
-          editable={!loading && currentStep !== 'done'}
-        />
-        <TouchableOpacity
-          style={[styles.sendBtn, (!inputVal.trim() || loading) && styles.sendBtnDisabled]}
-          onPress={handleSend}
-          disabled={!inputVal.trim() || loading}
-        >
-          <Ionicons name="send" size={18} color="#FFFFFF" />
-        </TouchableOpacity>
+        {currentStep === 'ask_hours' && (
+          <View style={styles.chipsRow}>
+            {['1 Hour', '2 Hours', '3 Hours', '4 Hours', '6 Hours'].map((h) => (
+              <TouchableOpacity
+                key={h}
+                style={styles.suggestionChip}
+                onPress={() => handleSend(h)}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.suggestionChipText}>{h}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
+
+        {currentStep === 'ask_months' && (
+          <View style={styles.chipsRow}>
+            {['1 Month', '2 Months', '3 Months', '6 Months'].map((m) => (
+              <TouchableOpacity
+                key={m}
+                style={styles.suggestionChip}
+                onPress={() => handleSend(m)}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.suggestionChipText}>{m}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
+
+        {/* M3 Bottom Dock Input */}
+        <View style={styles.bottomDock}>
+          <TextInput
+            style={styles.dockInput}
+            placeholder={
+              currentStep === 'ask_subject'
+                ? 'e.g. Python, UPSC, React Native...'
+                : 'Type your answer...'
+            }
+            placeholderTextColor={M3.colors.onSurfaceVariant}
+            value={inputVal}
+            onChangeText={setInputVal}
+            onSubmitEditing={() => handleSend()}
+            returnKeyType="send"
+            editable={!loading}
+          />
+
+          <TouchableOpacity
+            style={[styles.sendButton, !inputVal.trim() && styles.sendButtonDisabled]}
+            onPress={() => handleSend()}
+            disabled={!inputVal.trim() || loading}
+            activeOpacity={0.85}
+          >
+            <Ionicons name="arrow-up" size={22} color={M3.colors.onPrimary} />
+          </TouchableOpacity>
+        </View>
       </View>
     </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
+  keyboardContainer: {
+    flex: 1,
+  },
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: M3.colors.surface,
   },
-  header: {
+  topAppBar: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
-    paddingTop: 14,
-    paddingBottom: 14,
-    backgroundColor: '#FFFFFF',
+    paddingTop: 12,
+    paddingBottom: 12,
+    backgroundColor: M3.colors.surface,
     borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0',
+    borderBottomColor: M3.colors.outlineVariant,
     gap: 12,
   },
-  backBtn: {
-    padding: 4,
+  iconButton: {
+    width: 40,
+    height: 40,
+    borderRadius: M3.shapes.full,
+    backgroundColor: M3.colors.surfaceContainerHigh,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   headerInfo: {
     flex: 1,
   },
   headerTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#0F172A',
+    ...M3.typography.titleLarge,
+    color: M3.colors.onSurface,
   },
   headerSubtitle: {
-    fontSize: 12,
-    color: '#64748B',
+    ...M3.typography.bodySmall,
+    color: M3.colors.onSurfaceVariant,
   },
   messagesScroll: {
     flex: 1,
   },
   messagesContent: {
     padding: 16,
-    gap: 12,
+    paddingBottom: 24,
   },
-  bubbleWrapper: {
+  messageRow: {
     flexDirection: 'row',
+    marginBottom: 16,
     alignItems: 'flex-end',
     gap: 8,
   },
-  userWrapper: {
+  userRow: {
     justifyContent: 'flex-end',
   },
-  aiWrapper: {
+  aiRow: {
     justifyContent: 'flex-start',
   },
-  avatar: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: '#4F46E5',
+  avatarCircle: {
+    width: 32,
+    height: 32,
+    borderRadius: M3.shapes.full,
+    backgroundColor: M3.colors.primaryContainer,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 4,
   },
   bubble: {
     maxWidth: '82%',
-    padding: 12,
-    borderRadius: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
   },
+  // Asymmetric M3 bubble corners
   aiBubble: {
-    backgroundColor: '#FFFFFF',
-    borderBottomLeftRadius: 4,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
+    backgroundColor: M3.colors.surfaceContainerHigh,
+    borderTopLeftRadius: M3.shapes.large,
+    borderTopRightRadius: M3.shapes.large,
+    borderBottomRightRadius: M3.shapes.large,
+    borderBottomLeftRadius: M3.shapes.extraSmall,
   },
   userBubble: {
-    backgroundColor: '#4F46E5',
-    borderBottomRightRadius: 4,
+    backgroundColor: M3.colors.primary,
+    borderTopLeftRadius: M3.shapes.large,
+    borderTopRightRadius: M3.shapes.large,
+    borderBottomLeftRadius: M3.shapes.large,
+    borderBottomRightRadius: M3.shapes.extraSmall,
   },
   bubbleText: {
-    fontSize: 14,
-    lineHeight: 20,
+    ...M3.typography.bodyMedium,
+    lineHeight: 22,
   },
-  aiBubbleText: {
-    color: '#1E293B',
+  aiText: {
+    color: M3.colors.onSurface,
   },
-  userBubbleText: {
-    color: '#FFFFFF',
+  userText: {
+    color: M3.colors.onPrimary,
   },
-  timestampText: {
+  timestamp: {
     fontSize: 10,
     marginTop: 4,
-    alignSelf: 'flex-end',
   },
   aiTimestamp: {
-    color: '#94A3B8',
+    color: M3.colors.onSurfaceVariant,
+    textAlign: 'left',
   },
   userTimestamp: {
-    color: '#E0E7FF',
+    color: '#D8DBFF',
+    textAlign: 'right',
   },
-  loadingBox: {
+  loadingCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    padding: 12,
-    backgroundColor: '#EEF2FF',
-    borderRadius: 12,
+    backgroundColor: M3.colors.primaryContainer,
+    padding: 14,
+    borderRadius: M3.shapes.large,
+    gap: 12,
     alignSelf: 'flex-start',
+    marginTop: 8,
   },
   loadingText: {
-    fontSize: 13,
-    color: '#4338CA',
-    fontWeight: '500',
+    ...M3.typography.labelMedium,
+    color: M3.colors.onPrimaryContainer,
   },
-  inputBar: {
+  chipsRow: {
+    flexDirection: 'row',
+    paddingHorizontal: 16,
+    paddingBottom: 10,
+    gap: 8,
+    flexWrap: 'wrap',
+  },
+  suggestionChip: {
+    backgroundColor: M3.colors.surfaceContainerHigh,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: M3.shapes.full,
+    borderWidth: 1,
+    borderColor: M3.colors.outlineVariant,
+  },
+  suggestionChipText: {
+    ...M3.typography.labelSmall,
+    color: M3.colors.primary,
+    fontWeight: '700',
+  },
+  bottomDock: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 12,
-    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: M3.colors.surface,
     borderTopWidth: 1,
-    borderTopColor: '#E2E8F0',
+    borderTopColor: M3.colors.outlineVariant,
     gap: 10,
   },
-  input: {
+  dockInput: {
     flex: 1,
-    backgroundColor: '#F1F5F9',
-    borderRadius: 24,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+    backgroundColor: M3.colors.surfaceContainerHighest,
+    borderRadius: M3.shapes.full,
+    paddingHorizontal: 18,
+    paddingVertical: 12,
     fontSize: 14,
-    color: '#0F172A',
+    color: M3.colors.onSurface,
   },
-  sendBtn: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    backgroundColor: '#4F46E5',
+  sendButton: {
+    width: 46,
+    height: 46,
+    borderRadius: M3.shapes.full,
+    backgroundColor: M3.colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
+    ...M3.elevation.level1,
   },
-  sendBtnDisabled: {
-    backgroundColor: '#94A3B8',
+  sendButtonDisabled: {
+    backgroundColor: M3.colors.surfaceContainerHighest,
+    opacity: 0.5,
   },
 });

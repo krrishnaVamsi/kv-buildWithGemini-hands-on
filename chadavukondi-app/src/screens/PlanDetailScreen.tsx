@@ -15,6 +15,7 @@ import { StudyPlan, TopicStatus, StudyWeek, StudyDay } from '../types';
 import { TopicItem } from '../components/TopicItem';
 import { updateTopicStatusInPlan, addCustomTopicToDay } from '../storage/planStorage';
 import { exportStudyPlanToExcel } from '../utils/excelExport';
+import { M3 } from '../theme/material3';
 
 interface PlanDetailScreenProps {
   plan: StudyPlan;
@@ -61,218 +62,284 @@ export const PlanDetailScreen: React.FC<PlanDetailScreenProps> = ({
       if (Platform.OS === 'web') {
         window.alert('Please enter a topic title');
       } else {
-        Alert.alert('Missing Field', 'Please enter a topic title');
+        Alert.alert('Required', 'Please enter a topic title');
       }
       return;
     }
 
     if (!currentWeek || !currentDay) return;
 
-    const updated = await addCustomTopicToDay(plan.id, currentWeek.id, currentDay.id, {
-      title: newTopicTitle.trim(),
-      summary: newTopicSummary.trim(),
-      allocatedHours: parseFloat(newTopicHours) || 1,
-    });
+    const hours = parseFloat(newTopicHours) || 1;
+    const updated = await addCustomTopicToDay(
+      plan.id,
+      currentWeek.id,
+      currentDay.id,
+      {
+        title: newTopicTitle.trim(),
+        summary: newTopicSummary.trim(),
+        allocatedHours: hours,
+      }
+    );
 
     if (updated) {
       onPlanUpdated(updated);
       setNewTopicTitle('');
       setNewTopicSummary('');
+      setNewTopicHours('1');
       setAddTopicModalVisible(false);
     }
   };
 
+  // Compute metrics for the current day
+  const dayTopics = currentDay?.topics || [];
+  const completedDayTopics = dayTopics.filter((t) => t.status === 'completed').length;
+  const dayProgress = dayTopics.length > 0 ? Math.round((completedDayTopics / dayTopics.length) * 100) : 0;
+
   return (
     <View style={styles.container}>
-      {/* Top Header with Back gesture/button and Excel Export */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={onBack} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-          <Ionicons name="arrow-back" size={24} color="#0F172A" />
+      {/* M3 Top App Bar */}
+      <View style={styles.topAppBar}>
+        <TouchableOpacity style={styles.iconButton} onPress={onBack} activeOpacity={0.7}>
+          <Ionicons name="arrow-back" size={24} color={M3.colors.onSurface} />
         </TouchableOpacity>
-        <View style={styles.headerTitleCol}>
-          <Text style={styles.headerTitle} numberOfLines={1}>
+
+        <View style={styles.titleCol}>
+          <Text style={styles.planTitle} numberOfLines={1}>
             {plan.title}
           </Text>
-          <Text style={styles.headerSubtitle}>
-            {plan.streakWeeks}w streak • {plan.daysPerWeek} days/wk • {plan.hoursPerDay}h/day
-          </Text>
+          <Text style={styles.planSubtitle}>Business Calendar Schedule</Text>
         </View>
+
+        {/* M3 Filled Tonal Button for Excel Export */}
         <TouchableOpacity
-          style={styles.exportBtn}
+          style={styles.exportTonalButton}
           onPress={handleExportExcel}
           disabled={isExporting}
+          activeOpacity={0.8}
         >
-          <Ionicons name="download-outline" size={18} color="#FFFFFF" />
-          <Text style={styles.exportBtnText}>{isExporting ? '...' : 'Excel'}</Text>
+          <Ionicons name="document-text-outline" size={16} color={M3.colors.onPrimaryContainer} />
+          <Text style={styles.exportTonalText}>
+            {isExporting ? 'Exporting...' : 'Excel'}
+          </Text>
         </TouchableOpacity>
       </View>
 
-      {/* Week Selector Ribbon */}
-      <View style={styles.weekRibbonContainer}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.weekScrollContent}>
-          {plan.weeks.map((week, idx) => {
+      <ScrollView style={styles.scrollArea} contentContainerStyle={styles.scrollContent}>
+        {/* M3 Summary Overview Card */}
+        <View style={styles.overviewCard}>
+          <View style={styles.overviewRow}>
+            <View style={styles.overviewStat}>
+              <Text style={styles.overviewStatValue}>{plan.streakWeeks}w</Text>
+              <Text style={styles.overviewStatLabel}>Week Streak 🔥</Text>
+            </View>
+            <View style={styles.overviewDivider} />
+            <View style={styles.overviewStat}>
+              <Text style={styles.overviewStatValue}>{plan.streakDays}</Text>
+              <Text style={styles.overviewStatLabel}>Topics Cleared 🎯</Text>
+            </View>
+            <View style={styles.overviewDivider} />
+            <View style={styles.overviewStat}>
+              <Text style={styles.overviewStatValue}>{plan.badges ? plan.badges.length : 0}</Text>
+              <Text style={styles.overviewStatLabel}>Meme Badges 🏆</Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Week Segmented Pill Carousel */}
+        <View style={styles.sectionHeadingRow}>
+          <Text style={styles.sectionHeading}>Weeks Roadmap</Text>
+          <Text style={styles.sectionSub}>Week {selectedWeekIndex + 1} of {plan.weeks.length}</Text>
+        </View>
+
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.weeksCarousel}
+        >
+          {plan.weeks.map((w, idx) => {
             const isSelected = idx === selectedWeekIndex;
             return (
               <TouchableOpacity
-                key={week.id}
+                key={w.weekNumber}
                 style={[styles.weekPill, isSelected && styles.weekPillActive]}
                 onPress={() => {
                   setSelectedWeekIndex(idx);
                   setSelectedDayIndex(0);
                 }}
+                activeOpacity={0.8}
               >
                 <Text style={[styles.weekPillText, isSelected && styles.weekPillTextActive]}>
-                  Week {week.weekNumber}
+                  Week {w.weekNumber}
                 </Text>
-                {week.isCompleted && (
-                  <Ionicons name="checkmark-circle" size={13} color={isSelected ? '#FFFFFF' : '#10B981'} />
+                {w.isCompleted && (
+                  <Ionicons name="checkmark-circle" size={14} color={isSelected ? M3.colors.onPrimaryContainer : M3.colors.success} />
                 )}
               </TouchableOpacity>
             );
           })}
         </ScrollView>
-      </View>
 
-      {/* Week Theme & Context */}
-      {currentWeek && (
-        <View style={styles.themeBar}>
-          <Ionicons name="bulb-outline" size={16} color="#4F46E5" />
-          <Text style={styles.themeText} numberOfLines={1}>
-            {currentWeek.theme}
+        {/* Week Theme Banner */}
+        {currentWeek && (
+          <View style={styles.themeBanner}>
+            <View style={styles.themeTag}>
+              <Ionicons name="sparkles" size={13} color={M3.colors.tertiary} />
+              <Text style={styles.themeTagText}>FOCUS THEME</Text>
+            </View>
+            <Text style={styles.themeTitle}>{currentWeek.theme}</Text>
+          </View>
+        )}
+
+        {/* Day Selector Ribbon */}
+        <View style={styles.sectionHeadingRow}>
+          <Text style={styles.sectionHeading}>Day Sessions</Text>
+          <Text style={styles.sectionSub}>
+            {completedDayTopics}/{dayTopics.length} Done ({dayProgress}%)
           </Text>
         </View>
-      )}
 
-      {/* Day Selector Tabs */}
-      <View style={styles.daySelectorRow}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.dayScrollContent}>
-          {currentWeek?.days.map((day, dIdx) => {
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.daysCarousel}
+        >
+          {currentWeek?.days.map((d, dIdx) => {
             const isDaySelected = dIdx === selectedDayIndex;
-            const completedCount = day.topics.filter((t) => t.status === 'completed').length;
-            const totalCount = day.topics.length;
-            const allDayDone = totalCount > 0 && completedCount === totalCount;
+            const completedCount = d.topics.filter((t) => t.status === 'completed').length;
+            const isAllDone = d.topics.length > 0 && completedCount === d.topics.length;
 
             return (
               <TouchableOpacity
-                key={day.id}
-                style={[styles.dayCard, isDaySelected && styles.dayCardActive]}
+                key={d.dayNumber}
+                style={[styles.dayTab, isDaySelected && styles.dayTabActive]}
                 onPress={() => setSelectedDayIndex(dIdx)}
+                activeOpacity={0.8}
               >
-                <Text style={[styles.dayCardLabel, isDaySelected && styles.dayCardLabelActive]}>
-                  Day {day.dayNumber}
+                <Text style={[styles.dayTabTitle, isDaySelected && styles.dayTabTitleActive]}>
+                  Day {d.dayNumber}
                 </Text>
-                <Text style={[styles.dayCardDate, isDaySelected && styles.dayCardDateActive]}>
-                  {day.dateStr.split('-').slice(1).join('/')}
+                <Text style={[styles.dayTabDate, isDaySelected && styles.dayTabDateActive]}>
+                  {d.dateStr ? d.dateStr.split('-').slice(1).join('/') : `D${d.dayNumber}`}
                 </Text>
-                <View style={styles.dayStatusDotRow}>
-                  {allDayDone ? (
-                    <Ionicons name="checkmark" size={12} color={isDaySelected ? '#FFFFFF' : '#10B981'} />
-                  ) : (
-                    <Text style={[styles.dayTopicCount, isDaySelected && { color: '#FFFFFF' }]}>
-                      {completedCount}/{totalCount}
-                    </Text>
-                  )}
-                </View>
+                {isAllDone && (
+                  <View style={styles.dayDoneBadge}>
+                    <Ionicons name="checkmark" size={10} color="#FFFFFF" />
+                  </View>
+                )}
               </TouchableOpacity>
             );
           })}
         </ScrollView>
-      </View>
 
-      {/* Topics List for Current Day */}
-      <ScrollView style={styles.topicScrollView} contentContainerStyle={styles.topicScrollContent}>
-        <View style={styles.sectionHeaderRow}>
-          <Text style={styles.sectionHeading}>
-            Day {currentDay?.dayNumber} Topics ({currentDay?.dateStr})
+        {/* Topics List Header & Add Custom Topic Button */}
+        <View style={styles.topicHeaderRow}>
+          <Text style={styles.topicSectionTitle}>
+            Scheduled Topics ({dayTopics.length})
           </Text>
+
           <TouchableOpacity
-            style={styles.addTopicInlineBtn}
+            style={styles.addCustomTopicChip}
             onPress={() => setAddTopicModalVisible(true)}
+            activeOpacity={0.8}
           >
-            <Ionicons name="add-circle" size={16} color="#4F46E5" />
-            <Text style={styles.addTopicInlineText}>Add Topic</Text>
+            <Ionicons name="add" size={16} color={M3.colors.primary} />
+            <Text style={styles.addCustomTopicText}>Add Topic</Text>
           </TouchableOpacity>
         </View>
 
-        {(!currentDay?.topics || currentDay.topics.length === 0) ? (
-          <View style={styles.emptyTopicBox}>
-            <Text style={styles.emptyTopicText}>No topics scheduled for this day.</Text>
+        {/* Topics List */}
+        {dayTopics.length === 0 ? (
+          <View style={styles.emptyDayBox}>
+            <Ionicons name="calendar-outline" size={32} color={M3.colors.onSurfaceVariant} />
+            <Text style={styles.emptyDayText}>No topics scheduled for this day.</Text>
             <TouchableOpacity
-              style={styles.addFirstTopicBtn}
+              style={styles.addTopicQuickBtn}
               onPress={() => setAddTopicModalVisible(true)}
             >
-              <Text style={styles.addFirstTopicBtnText}>+ Add a topic</Text>
+              <Text style={styles.addTopicQuickBtnText}>+ Add Custom Topic</Text>
             </TouchableOpacity>
           </View>
         ) : (
-          currentDay.topics.map((topic) => (
+          dayTopics.map((topic) => (
             <TopicItem
               key={topic.id}
               topic={topic}
-              onStatusChange={(newStatus) => handleStatusChange(topic.id, newStatus)}
+              onStatusChange={(status) => handleStatusChange(topic.id, status)}
             />
           ))
         )}
-
-        {/* Motivational meme quote banner */}
-        <View style={styles.memeBox}>
-          <Ionicons name="sparkles" size={18} color="#D97706" />
-          <View style={styles.memeTextCol}>
-            <Text style={styles.memeTelugu}>“చదువుకోండి ఫస్టు... మిగతావన్నీ తరువాత!”</Text>
-            <Text style={styles.memeEnglish}>Finish today’s syllabus before checking social media.</Text>
-          </View>
-        </View>
       </ScrollView>
 
-      {/* Add Custom Topic Modal */}
-      <Modal visible={addTopicModalVisible} transparent animationType="slide">
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalCard}>
+      {/* M3 Add Custom Topic Dialog Modal */}
+      <Modal
+        visible={addTopicModalVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setAddTopicModalVisible(false)}
+      >
+        <View style={styles.modalBackdrop}>
+          <View style={styles.m3DialogCard}>
             <View style={styles.modalHeader}>
+              <View style={styles.modalHeaderIcon}>
+                <Ionicons name="create-outline" size={20} color={M3.colors.primary} />
+              </View>
               <Text style={styles.modalTitle}>Add Custom Topic</Text>
-              <TouchableOpacity onPress={() => setAddTopicModalVisible(false)}>
-                <Ionicons name="close" size={24} color="#64748B" />
-              </TouchableOpacity>
             </View>
 
-            <Text style={styles.inputLabel}>Topic Title *</Text>
-            <TextInput
-              style={styles.textInput}
-              placeholder="e.g. Dynamic Programming Memoization"
-              value={newTopicTitle}
-              onChangeText={setNewTopicTitle}
-            />
+            <Text style={styles.modalSubtitle}>
+              Inserting into Week {selectedWeekIndex + 1}, Day {selectedDayIndex + 1}
+            </Text>
 
-            <Text style={styles.inputLabel}>Summary / Notes (Optional)</Text>
-            <TextInput
-              style={[styles.textInput, { height: 70, textAlignVertical: 'top' }]}
-              placeholder="Key concepts or links..."
-              multiline
-              value={newTopicSummary}
-              onChangeText={setNewTopicSummary}
-            />
+            <View style={styles.formGroup}>
+              <Text style={styles.inputLabel}>Topic Title *</Text>
+              <TextInput
+                style={styles.dialogInput}
+                placeholder="e.g., Dynamic Programming Revision"
+                placeholderTextColor={M3.colors.outline}
+                value={newTopicTitle}
+                onChangeText={setNewTopicTitle}
+              />
+            </View>
 
-            <Text style={styles.inputLabel}>Allocated Hours</Text>
-            <TextInput
-              style={styles.textInput}
-              placeholder="1"
-              keyboardType="numeric"
-              value={newTopicHours}
-              onChangeText={setNewTopicHours}
-            />
+            <View style={styles.formGroup}>
+              <Text style={styles.inputLabel}>Key Notes / Concepts (Optional)</Text>
+              <TextInput
+                style={[styles.dialogInput, styles.dialogInputMulti]}
+                placeholder="e.g., Focus on memoization and knapsack patterns"
+                placeholderTextColor={M3.colors.outline}
+                multiline
+                numberOfLines={3}
+                value={newTopicSummary}
+                onChangeText={setNewTopicSummary}
+              />
+            </View>
 
-            <View style={styles.modalActionRow}>
+            <View style={styles.formGroup}>
+              <Text style={styles.inputLabel}>Study Hours</Text>
+              <TextInput
+                style={styles.dialogInput}
+                placeholder="1.5"
+                placeholderTextColor={M3.colors.outline}
+                keyboardType="numeric"
+                value={newTopicHours}
+                onChangeText={setNewTopicHours}
+              />
+            </View>
+
+            {/* Dialog Actions */}
+            <View style={styles.modalActions}>
               <TouchableOpacity
-                style={styles.modalCancelBtn}
+                style={styles.dialogTextButton}
                 onPress={() => setAddTopicModalVisible(false)}
               >
-                <Text style={styles.modalCancelText}>Cancel</Text>
+                <Text style={styles.dialogTextButtonLabel}>Cancel</Text>
               </TouchableOpacity>
+
               <TouchableOpacity
-                style={styles.modalConfirmBtn}
+                style={styles.dialogFilledButton}
                 onPress={handleAddCustomTopic}
               >
-                <Text style={styles.modalConfirmText}>Add to Schedule</Text>
+                <Text style={styles.dialogFilledButtonLabel}>Add to Schedule</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -285,288 +352,330 @@ export const PlanDetailScreen: React.FC<PlanDetailScreenProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: M3.colors.surface,
   },
-  header: {
+  topAppBar: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
-    paddingTop: 14,
-    paddingBottom: 14,
-    backgroundColor: '#FFFFFF',
+    paddingTop: 12,
+    paddingBottom: 12,
+    backgroundColor: M3.colors.surface,
     borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0',
+    borderBottomColor: M3.colors.outlineVariant,
     gap: 12,
   },
-  backButton: {
-    padding: 4,
+  iconButton: {
+    width: 40,
+    height: 40,
+    borderRadius: M3.shapes.full,
+    backgroundColor: M3.colors.surfaceContainerHigh,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  headerTitleCol: {
+  titleCol: {
     flex: 1,
   },
-  headerTitle: {
-    fontSize: 17,
+  planTitle: {
+    ...M3.typography.titleMedium,
+    color: M3.colors.onSurface,
     fontWeight: '700',
-    color: '#0F172A',
   },
-  headerSubtitle: {
-    fontSize: 12,
-    color: '#64748B',
-    marginTop: 2,
+  planSubtitle: {
+    ...M3.typography.bodySmall,
+    color: M3.colors.onSurfaceVariant,
   },
-  exportBtn: {
+  exportTonalButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#059669',
+    backgroundColor: M3.colors.primaryContainer,
     paddingHorizontal: 12,
     paddingVertical: 7,
-    borderRadius: 8,
-    gap: 4,
+    borderRadius: M3.shapes.full,
+    gap: 6,
   },
-  exportBtnText: {
-    color: '#FFFFFF',
-    fontSize: 12,
+  exportTonalText: {
+    ...M3.typography.labelSmall,
+    color: M3.colors.onPrimaryContainer,
     fontWeight: '700',
   },
-  weekRibbonContainer: {
-    backgroundColor: '#FFFFFF',
-    paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F1F5F9',
+  scrollArea: {
+    flex: 1,
   },
-  weekScrollContent: {
-    paddingHorizontal: 16,
+  scrollContent: {
+    padding: 16,
+    paddingBottom: 40,
+  },
+  overviewCard: {
+    backgroundColor: M3.colors.surfaceContainerLow,
+    borderRadius: M3.shapes.extraLarge,
+    padding: 16,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: M3.colors.outlineVariant,
+    ...M3.elevation.level1,
+  },
+  overviewRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+  },
+  overviewStat: {
+    alignItems: 'center',
+  },
+  overviewStatValue: {
+    ...M3.typography.headlineMedium,
+    color: M3.colors.primary,
+  },
+  overviewStatLabel: {
+    ...M3.typography.labelSmall,
+    color: M3.colors.onSurfaceVariant,
+    marginTop: 2,
+  },
+  overviewDivider: {
+    width: 1,
+    height: 32,
+    backgroundColor: M3.colors.outlineVariant,
+  },
+  sectionHeadingRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  sectionHeading: {
+    ...M3.typography.titleMedium,
+    color: M3.colors.onSurface,
+  },
+  sectionSub: {
+    ...M3.typography.labelSmall,
+    color: M3.colors.onSurfaceVariant,
+  },
+  weeksCarousel: {
     gap: 8,
+    paddingBottom: 16,
   },
   weekPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: 14,
-    paddingVertical: 6,
-    borderRadius: 20,
-    backgroundColor: '#F1F5F9',
-  },
-  weekPillActive: {
-    backgroundColor: '#4F46E5',
-  },
-  weekPillText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#475569',
-  },
-  weekPillTextActive: {
-    color: '#FFFFFF',
-  },
-  themeBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#EEF2FF',
+    backgroundColor: M3.colors.surfaceContainerHigh,
     paddingHorizontal: 16,
     paddingVertical: 8,
-    gap: 8,
+    borderRadius: M3.shapes.full,
+    borderWidth: 1,
+    borderColor: M3.colors.outlineVariant,
+    gap: 6,
   },
-  themeText: {
-    fontSize: 12,
-    color: '#4338CA',
+  weekPillActive: {
+    backgroundColor: M3.colors.primaryContainer,
+    borderColor: M3.colors.primary,
+  },
+  weekPillText: {
+    ...M3.typography.labelMedium,
+    color: M3.colors.onSurfaceVariant,
+  },
+  weekPillTextActive: {
+    color: M3.colors.onPrimaryContainer,
+    fontWeight: '700',
+  },
+  themeBanner: {
+    backgroundColor: M3.colors.tertiaryContainer,
+    borderRadius: M3.shapes.large,
+    padding: 14,
+    marginBottom: 20,
+  },
+  themeTag: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginBottom: 4,
+  },
+  themeTagText: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: M3.colors.tertiary,
+    letterSpacing: 0.8,
+  },
+  themeTitle: {
+    ...M3.typography.bodyMedium,
+    color: M3.colors.onTertiaryContainer,
     fontWeight: '600',
-    flex: 1,
   },
-  daySelectorRow: {
-    backgroundColor: '#FFFFFF',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0',
-  },
-  dayScrollContent: {
-    paddingHorizontal: 16,
+  daysCarousel: {
     gap: 10,
+    paddingBottom: 20,
   },
-  dayCard: {
+  dayTab: {
     width: 72,
     paddingVertical: 10,
-    borderRadius: 12,
-    backgroundColor: '#F8FAFC',
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderRadius: M3.shapes.large,
+    backgroundColor: M3.colors.surfaceContainerLow,
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: M3.colors.outlineVariant,
   },
-  dayCardActive: {
-    backgroundColor: '#4F46E5',
-    borderColor: '#4F46E5',
+  dayTabActive: {
+    backgroundColor: M3.colors.primary,
+    borderColor: M3.colors.primary,
+    ...M3.elevation.level2,
   },
-  dayCardLabel: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#1E293B',
-    marginBottom: 2,
+  dayTabTitle: {
+    ...M3.typography.labelMedium,
+    color: M3.colors.onSurface,
   },
-  dayCardLabelActive: {
-    color: '#FFFFFF',
+  dayTabTitleActive: {
+    color: M3.colors.onPrimary,
   },
-  dayCardDate: {
+  dayTabDate: {
     fontSize: 10,
-    color: '#64748B',
-    marginBottom: 6,
-  },
-  dayCardDateActive: {
-    color: '#E0E7FF',
-  },
-  dayStatusDotRow: {
+    color: M3.colors.onSurfaceVariant,
     marginTop: 2,
   },
-  dayTopicCount: {
-    fontSize: 10,
-    fontWeight: '600',
-    color: '#475569',
+  dayTabDateActive: {
+    color: '#D8DBFF',
   },
-  topicScrollView: {
-    flex: 1,
+  dayDoneBadge: {
+    position: 'absolute',
+    top: -4,
+    right: -4,
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: M3.colors.success,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  topicScrollContent: {
-    padding: 16,
-  },
-  sectionHeaderRow: {
+  topicHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 12,
   },
-  sectionHeading: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: '#1E293B',
+  topicSectionTitle: {
+    ...M3.typography.titleMedium,
+    color: M3.colors.onSurface,
   },
-  addTopicInlineBtn: {
+  addCustomTopicChip: {
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: M3.colors.surfaceContainerHigh,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: M3.shapes.full,
     gap: 4,
   },
-  addTopicInlineText: {
-    fontSize: 13,
-    color: '#4F46E5',
-    fontWeight: '600',
+  addCustomTopicText: {
+    ...M3.typography.labelMedium,
+    color: M3.colors.primary,
   },
-  emptyTopicBox: {
-    backgroundColor: '#FFFFFF',
-    padding: 24,
-    borderRadius: 12,
+  emptyDayBox: {
+    backgroundColor: M3.colors.surfaceContainerLow,
+    borderRadius: M3.shapes.large,
+    padding: 28,
     alignItems: 'center',
-    marginBottom: 16,
+    marginTop: 8,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: M3.colors.outlineVariant,
   },
-  emptyTopicText: {
-    color: '#64748B',
-    fontSize: 14,
-    marginBottom: 10,
+  emptyDayText: {
+    ...M3.typography.bodyMedium,
+    color: M3.colors.onSurfaceVariant,
+    marginTop: 8,
+    marginBottom: 12,
   },
-  addFirstTopicBtn: {
-    backgroundColor: '#EEF2FF',
-    paddingHorizontal: 14,
-    paddingVertical: 7,
-    borderRadius: 8,
+  addTopicQuickBtn: {
+    backgroundColor: M3.colors.primary,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: M3.shapes.full,
   },
-  addFirstTopicBtnText: {
-    color: '#4F46E5',
-    fontWeight: '600',
-    fontSize: 13,
+  addTopicQuickBtnText: {
+    ...M3.typography.labelMedium,
+    color: M3.colors.onPrimary,
   },
-  memeBox: {
-    flexDirection: 'row',
-    backgroundColor: '#FEF3C7',
-    borderRadius: 12,
-    padding: 14,
-    marginTop: 14,
-    gap: 10,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#FDE68A',
-  },
-  memeTextCol: {
+  modalBackdrop: {
     flex: 1,
-  },
-  memeTelugu: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: '#92400E',
-    marginBottom: 2,
-  },
-  memeEnglish: {
-    fontSize: 11,
-    color: '#B45309',
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(15, 23, 42, 0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.45)',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
   },
-  modalCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
+  m3DialogCard: {
     width: '100%',
-    maxWidth: 420,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOpacity: 0.15,
-    shadowRadius: 10,
-    elevation: 6,
+    maxWidth: 480,
+    backgroundColor: M3.colors.surfaceContainerHigh,
+    borderRadius: M3.shapes.extraLarge,
+    padding: 24,
+    ...M3.elevation.level3,
   },
   modalHeader: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    gap: 10,
+    marginBottom: 4,
+  },
+  modalHeaderIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: M3.shapes.full,
+    backgroundColor: M3.colors.primaryContainer,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   modalTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#0F172A',
+    ...M3.typography.titleLarge,
+    color: M3.colors.onSurface,
   },
-  inputLabel: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#334155',
-    marginBottom: 6,
+  modalSubtitle: {
+    ...M3.typography.bodySmall,
+    color: M3.colors.onSurfaceVariant,
+    marginBottom: 18,
   },
-  textInput: {
-    backgroundColor: '#F8FAFC',
-    borderWidth: 1,
-    borderColor: '#CBD5E1',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    fontSize: 14,
-    color: '#0F172A',
+  formGroup: {
     marginBottom: 14,
   },
-  modalActionRow: {
+  inputLabel: {
+    ...M3.typography.labelSmall,
+    color: M3.colors.onSurfaceVariant,
+    marginBottom: 6,
+  },
+  dialogInput: {
+    backgroundColor: M3.colors.surfaceContainerLowest,
+    borderWidth: 1,
+    borderColor: M3.colors.outlineVariant,
+    borderRadius: M3.shapes.medium,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    fontSize: 14,
+    color: M3.colors.onSurface,
+  },
+  dialogInputMulti: {
+    height: 70,
+    textAlignVertical: 'top',
+  },
+  modalActions: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    gap: 10,
-    marginTop: 8,
+    gap: 12,
+    marginTop: 18,
   },
-  modalCancelBtn: {
-    paddingVertical: 10,
+  dialogTextButton: {
     paddingHorizontal: 16,
-    borderRadius: 8,
-  },
-  modalCancelText: {
-    color: '#64748B',
-    fontWeight: '600',
-    fontSize: 14,
-  },
-  modalConfirmBtn: {
-    backgroundColor: '#4F46E5',
     paddingVertical: 10,
-    paddingHorizontal: 18,
-    borderRadius: 8,
   },
-  modalConfirmText: {
-    color: '#FFFFFF',
-    fontWeight: '700',
-    fontSize: 14,
+  dialogTextButtonLabel: {
+    ...M3.typography.labelLarge,
+    color: M3.colors.primary,
+  },
+  dialogFilledButton: {
+    backgroundColor: M3.colors.primary,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: M3.shapes.full,
+    ...M3.elevation.level1,
+  },
+  dialogFilledButtonLabel: {
+    ...M3.typography.labelLarge,
+    color: M3.colors.onPrimary,
   },
 });
