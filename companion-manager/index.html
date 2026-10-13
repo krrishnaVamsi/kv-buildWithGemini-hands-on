@@ -3,18 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chadavukondi Firstu - Content & Meme Manager</title>
+  <title>Chadavukondi Firstu — Creator Studio & Meme Vault</title>
   <link rel="stylesheet" href="styles.css">
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Telugu:wght@500;700;800&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="dark-mode">
   <div class="app-container">
+    <!-- Top Nav Header -->
     <header class="top-nav">
       <div class="brand">
-        <div class="badge-icon">🎓</div>
+        <div class="badge-icon">⚡️</div>
         <div>
-          <h1>చదువుకోండి ఫస్టు</h1>
-          <p class="subtitle">Content, Meme References & Badge Companion Manager</p>
+          <h1>Chadavukondi Firstu <span class="admin-pill">Creator Studio</span></h1>
+          <p class="subtitle">Private Admin & Meme Vault — Updated exclusively by creator</p>
         </div>
       </div>
       <div class="actions">
@@ -24,14 +27,37 @@
     </header>
 
     <main class="main-content">
+      <!-- Section: Creator Settings & API Vault -->
+      <section class="card-section">
+        <div class="section-head">
+          <div>
+            <h2>🔐 Creator Settings & API Vault</h2>
+            <p>Private engine settings for Google Gemini API key and prompt parameters.</p>
+          </div>
+          <span id="apiStatusBadge" class="status-badge">Offline Synthesizer Ready</span>
+        </div>
+        <div class="api-vault-card">
+          <div class="input-group">
+            <label for="apiKeyInput">Google Gemini API Key</label>
+            <div class="input-with-button">
+              <input type="password" id="apiKeyInput" placeholder="Enter AIzaSy... key to test or generate config" />
+              <button id="saveApiKeyBtn" class="btn btn-secondary">Save Locally</button>
+              <button id="testApiKeyBtn" class="btn btn-primary">Test Connection</button>
+            </div>
+            <span class="help-text">Stored strictly in your local browser storage. Never exposed to app users or committed to git.</span>
+          </div>
+          <div id="testResultBox" class="test-result hidden"></div>
+        </div>
+      </section>
+
       <!-- Section: Meme References -->
       <section class="card-section">
         <div class="section-head">
           <div>
-            <h2>Telugu Meme Dialogues & References</h2>
-            <p>Motivational, funny, and discipline meme quotes injected into the app.</p>
+            <h2>🔥 Telugu Meme Dialogues & Quotes</h2>
+            <p>Motivational, punchy, and discipline quotes injected into the AI planner & notifications.</p>
           </div>
-          <button id="addMemeBtn" class="btn btn-small">+ Add Meme</button>
+          <button id="addMemeBtn" class="btn btn-primary">+ Add New Dialogue</button>
         </div>
         <div id="memeList" class="grid-list"></div>
       </section>
@@ -40,16 +66,16 @@
       <section class="card-section">
         <div class="section-head">
           <div>
-            <h2>Milestone Achievement Badges</h2>
-            <p>Weekly, monthly, and streak badges earned by learners.</p>
+            <h2>🏆 Mystery Milestone Achievements</h2>
+            <p>Hidden easter egg badges unlocked by students when maintaining weekly and monthly streaks.</p>
           </div>
-          <button id="addBadgeBtn" class="btn btn-small">+ Add Badge</button>
+          <button id="addBadgeBtn" class="btn btn-primary">+ Add New Badge</button>
         </div>
         <div id="badgeList" class="grid-list"></div>
       </section>
     </main>
 
-    <!-- Modal for editing/adding meme -->
+    <!-- Modal for editing/adding item -->
     <div id="editModal" class="modal-backdrop hidden">
       <div class="modal">
         <div class="modal-header">

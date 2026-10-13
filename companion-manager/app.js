@@ -1,3 +1,5 @@
+// Companion Manager & Creator Studio Logic
+
 let memes = [
   {
     id: 'meme-1',
@@ -17,10 +19,10 @@ let memes = [
   },
   {
     id: 'meme-3',
-    title: 'Athadu Punctuality',
+    title: 'Pokiri Iconic Punch',
     teluguQuote: 'ఒక్కసారి కమిట్ అయితే నా మాట నేనే వినను',
     englishMeaning: 'Once I commit to my schedule, even I don’t listen to myself',
-    characterOrScene: 'Mahesh Babu Athadu / Pokiri punch',
+    characterOrScene: 'Mahesh Babu Pokiri dialogue',
     category: 'motivation',
   },
   {
@@ -68,72 +70,141 @@ let badges = [
     id: 'badge-month-1',
     title: 'Month 1 Boss Level',
     teluguTitle: 'ఇదే నా బ్రాండ్!',
-    description: 'Completed a full month of rigorous syllabus!',
-    memeQuote: 'Oka sari commit aithe, naa syllabus maata nene vinanu!',
+    description: 'Crushed an entire month of disciplined study goals.',
+    memeQuote: 'Okkasari commit aithe na maata nene vinanu!',
     badgeType: 'monthly',
     iconName: 'trophy',
     color: '#8B5CF6',
   },
 ];
 
+// Load local saved API Key
+const savedApiKey = localStorage.getItem('creator_gemini_api_key') || '';
+const apiKeyInput = document.getElementById('apiKeyInput');
+const apiStatusBadge = document.getElementById('apiStatusBadge');
+const testResultBox = document.getElementById('testResultBox');
+
+if (savedApiKey) {
+  apiKeyInput.value = savedApiKey;
+  apiStatusBadge.textContent = 'API Key Configured ⚡️';
+  apiStatusBadge.style.color = '#34D399';
+}
+
+document.getElementById('saveApiKeyBtn').addEventListener('click', () => {
+  const key = apiKeyInput.value.trim();
+  if (key) {
+    localStorage.setItem('creator_gemini_api_key', key);
+    apiStatusBadge.textContent = 'API Key Configured ⚡️';
+    apiStatusBadge.style.color = '#34D399';
+    alert('API Key safely saved to your local browser storage!');
+  } else {
+    localStorage.removeItem('creator_gemini_api_key');
+    apiStatusBadge.textContent = 'Offline Synthesizer Ready';
+    apiStatusBadge.style.color = '#F59E0B';
+  }
+});
+
+document.getElementById('testApiKeyBtn').addEventListener('click', async () => {
+  const key = apiKeyInput.value.trim();
+  if (!key) {
+    alert('Please enter a Google Gemini API Key first.');
+    return;
+  }
+
+  testResultBox.classList.remove('hidden', 'success', 'error');
+  testResultBox.textContent = 'Testing connection with Google Gemini 2.5 Flash...';
+
+  try {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: 'Respond with: "Gemini connection verified!"' }] }]
+      })
+    });
+
+    const data = await res.json();
+    if (res.ok && data.candidates) {
+      testResultBox.className = 'test-result success';
+      testResultBox.textContent = '✅ Success! Connected to Gemini API successfully.';
+    } else {
+      testResultBox.className = 'test-result error';
+      testResultBox.textContent = `❌ API Error: ${data.error?.message || 'Invalid API Key'}`;
+    }
+  } catch (err) {
+    testResultBox.className = 'test-result error';
+    testResultBox.textContent = `❌ Network Error: ${err.message}`;
+  }
+});
+
 function renderMemes() {
-  const container = document.getElementById('memeList');
-  container.innerHTML = '';
+  const list = document.getElementById('memeList');
+  list.innerHTML = '';
   memes.forEach((m, idx) => {
     const card = document.createElement('div');
     card.className = 'item-card';
     card.innerHTML = `
       <div>
-        <div class="item-title">${m.title}</div>
-        <div class="item-telugu">${m.teluguQuote}</div>
-        <div class="item-desc">Meaning: ${m.englishMeaning}</div>
-        <div class="item-quote">Ref: ${m.characterOrScene}</div>
+        <div class="item-card-header">
+          <span class="item-title">${m.title}</span>
+          <span class="item-category">${m.category}</span>
+        </div>
+        <p class="item-quote">“${m.teluguQuote}”</p>
+        <p class="item-desc">${m.englishMeaning}</p>
+        <p class="item-desc" style="font-size: 11px; color: #6B7280; margin-top: 4px;">🎬 ${m.characterOrScene}</p>
       </div>
       <div class="item-footer">
-        <span class="tag">${m.category}</span>
-        <div class="item-actions">
-          <button class="btn-icon" onclick="deleteMeme(${idx})">🗑️</button>
+        <span style="font-size: 12px; color: #9CA3AF;">#${idx + 1}</span>
+        <div class="card-actions">
+          <button class="btn btn-secondary btn-small" onclick="editMeme('${m.id}')">Edit</button>
+          <button class="btn btn-danger btn-small" onclick="deleteMeme('${m.id}')">Delete</button>
         </div>
       </div>
     `;
-    container.appendChild(card);
+    list.appendChild(card);
   });
 }
 
 function renderBadges() {
-  const container = document.getElementById('badgeList');
-  container.innerHTML = '';
-  badges.forEach((b, idx) => {
+  const list = document.getElementById('badgeList');
+  list.innerHTML = '';
+  badges.forEach((b) => {
     const card = document.createElement('div');
     card.className = 'item-card';
     card.innerHTML = `
       <div>
-        <div class="item-title">${b.title}</div>
-        <div class="item-telugu">${b.teluguTitle}</div>
-        <div class="item-desc">${b.description}</div>
-        <div class="item-quote">“${b.memeQuote}”</div>
+        <div class="item-card-header">
+          <span class="item-title">${b.title}</span>
+          <span class="item-badge-pill" style="background-color: ${b.color}22; color: ${b.color}; border: 1px solid ${b.color}55;">
+            ${b.badgeType}
+          </span>
+        </div>
+        <p class="item-quote" style="color: ${b.color};">${b.teluguTitle}</p>
+        <p class="item-desc">${b.description}</p>
+        <p class="item-desc" style="font-size: 12px; font-style: italic; margin-top: 4px;">"${b.memeQuote}"</p>
       </div>
       <div class="item-footer">
-        <span class="tag tag-${b.badgeType}">${b.badgeType}</span>
-        <div class="item-actions">
-          <button class="btn-icon" onclick="deleteBadge(${idx})">🗑️</button>
+        <span style="font-size: 12px; color: #9CA3AF;">Icon: ${b.iconName}</span>
+        <div class="card-actions">
+          <button class="btn btn-secondary btn-small" onclick="editBadge('${b.id}')">Edit</button>
+          <button class="btn btn-danger btn-small" onclick="deleteBadge('${b.id}')">Delete</button>
         </div>
       </div>
     `;
-    container.appendChild(card);
+    list.appendChild(card);
   });
 }
 
-window.deleteMeme = function(idx) {
-  if (confirm(`Delete meme "${memes[idx].title}"?`)) {
-    memes.splice(idx, 1);
+window.deleteMeme = function(id) {
+  if (confirm('Delete this meme reference?')) {
+    memes = memes.filter(m => m.id !== id);
     renderMemes();
   }
 };
 
-window.deleteBadge = function(idx) {
-  if (confirm(`Delete badge "${badges[idx].title}"?`)) {
-    badges.splice(idx, 1);
+window.deleteBadge = function(id) {
+  if (confirm('Delete this achievement badge?')) {
+    badges = badges.filter(b => b.id !== id);
     renderBadges();
   }
 };
@@ -142,8 +213,8 @@ document.getElementById('addMemeBtn').addEventListener('click', () => {
   const title = prompt('Enter Meme Reference Title:');
   if (!title) return;
   const teluguQuote = prompt('Enter Telugu Dialogue / Quote:');
-  const englishMeaning = prompt('Enter English Meaning / Context:');
-  const characterOrScene = prompt('Enter Character or Movie Reference:');
+  const englishMeaning = prompt('Enter English Meaning:');
+  const characterOrScene = prompt('Enter Character / Movie Reference:');
 
   memes.push({
     id: `meme-${Date.now()}`,
@@ -171,7 +242,7 @@ document.getElementById('addBadgeBtn').addEventListener('click', () => {
     memeQuote: memeQuote || '',
     badgeType: 'weekly',
     iconName: 'trophy',
-    color: '#4F46E5',
+    color: '#818CF8',
   });
   renderBadges();
 });
@@ -187,7 +258,7 @@ document.getElementById('exportJsonBtn').addEventListener('click', () => {
 });
 
 document.getElementById('copyTsBtn').addEventListener('click', () => {
-  const tsContent = `// Generated from Companion Manager
+  const tsContent = `// Generated from Creator Studio & Meme Vault
 import { MemeBadge, MemeReference } from '../types';
 
 export const MEME_BADGES_CATALOG: MemeBadge[] = ${JSON.stringify(badges, null, 2)};

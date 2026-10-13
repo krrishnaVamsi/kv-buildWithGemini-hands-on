@@ -17,7 +17,6 @@ import { PlanCard } from '../components/PlanCard';
 import { loadPlans, deletePlan, getApiKey } from '../storage/planStorage';
 import { ChatPlannerScreen } from './ChatPlannerScreen';
 import { PlanDetailScreen } from './PlanDetailScreen';
-import { SettingsScreen } from './SettingsScreen';
 import { useTheme } from '../theme/ThemeContext';
 
 export const HomeScreen: React.FC = () => {
@@ -25,7 +24,7 @@ export const HomeScreen: React.FC = () => {
   const [plans, setPlans] = useState<StudyPlan[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [activeScreen, setActiveScreen] = useState<'home' | 'chat' | 'detail' | 'settings'>('home');
+  const [activeScreen, setActiveScreen] = useState<'home' | 'chat' | 'detail'>('home');
   const [selectedPlan, setSelectedPlan] = useState<StudyPlan | null>(null);
   const [currentApiKey, setCurrentApiKey] = useState('');
 
@@ -97,19 +96,6 @@ export const HomeScreen: React.FC = () => {
     );
   }
 
-  if (activeScreen === 'settings') {
-    return (
-      <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.colors.surface }]}>
-        <SettingsScreen
-          currentApiKey={currentApiKey}
-          onBack={() => setActiveScreen('home')}
-          onApiKeySaved={(newKey) => {
-            setCurrentApiKey(newKey);
-          }}
-        />
-      </SafeAreaView>
-    );
-  }
 
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.colors.surface }]}>
@@ -158,19 +144,6 @@ export const HomeScreen: React.FC = () => {
               size={18}
               color={isDark ? '#FBBF24' : theme.colors.primary}
             />
-          </TouchableOpacity>
-
-          {/* Settings / Meme Vault */}
-          <TouchableOpacity
-            style={[
-              styles.actionIconButton,
-              { backgroundColor: theme.colors.primaryContainer },
-            ]}
-            onPress={() => setActiveScreen('settings')}
-            activeOpacity={0.7}
-            accessibilityLabel="Settings and Meme Vault"
-          >
-            <Ionicons name="sparkles" size={17} color={theme.colors.primary} />
           </TouchableOpacity>
         </View>
       </View>
